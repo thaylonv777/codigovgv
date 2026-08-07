@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /vgv47/
+
+Sitemap: https://codigo.atriomarketing.site/sitemap.xml
