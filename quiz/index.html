@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Código VGV — Diagnóstico de Campanha</title>
+<meta name="description" content="Responda 3 perguntas e descubra o que está travando sua campanha de tráfego pago — em 30 segundos.">
+<meta name="robots" content="noindex, follow">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2306080D'/%3E%3Ccircle cx='32' cy='32' r='12' fill='%23C9A14E'/%3E%3C/svg%3E">
+
+<!-- Meta Pixel -->
+<script>
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '1781487919970985');
+fbq('track', 'PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none"
+src="https://www.facebook.com/tr?id=1781487919970985&ev=PageView&noscript=1"
+/></noscript>
+<!-- TikTok Pixel -->
+<script>
+!function (w, d, t) {
+  w.TiktokAnalyticsObject=t;var ttq=w[t]=w[t]||[];ttq.methods=["page","track","identify","instances","debug","on","off","once","ready","alias","group","enableCookie","disableCookie","holdConsent","revokeConsent","grantConsent"],ttq.setAndDefer=function(t,e){t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}};for(var i=0;i<ttq.methods.length;i++)ttq.setAndDefer(ttq,ttq.methods[i]);ttq.instance=function(t){for(
+var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n]);return e},ttq.load=function(e,n){var r="https://analytics.tiktok.com/i18n/pixel/events.js",o=n&&n.partner;ttq._i=ttq._i||{},ttq._i[e]=[],ttq._i[e]._u=r,ttq._t=ttq._t||{},ttq._t[e]=+new Date,ttq._o=ttq._o||{},ttq._o[e]=n||{};n=document.createElement("script")
+;n.type="text/javascript",n.async=!0,n.src=r+"?sdkid="+e+"&lib="+t;e=document.getElementsByTagName("script")[0];e.parentNode.insertBefore(n,e)};
+  ttq.load('DBD646JC77U4SEFNH9HG');
+  ttq.page();
+}(window, document, 'ttq');
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="preload" as="image" href="../ebook.webp" fetchpriority="high">
+
+<style>
+:root{
+  --ink:#06080D; --ink2:#0A0E16; --ink3:#10151F; --panel:#0D121B;
+  --paper:#F3F1EA; --white:#fff;
+  --gold:#C9A14E; --gold-l:#F0D9A0; --gold-d:#8A6726;
+  --muted:#8E95A3; --muted2:#C6CAD4; --line:rgba(240,217,160,.16);
+  --ok:#4CAF7D; --bad:#E0776B;
+  --grad-gold:linear-gradient(135deg,#F7E7BC 0%,#E0C27E 28%,#C9A14E 55%,#9C7634 100%);
+  --maxw:560px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;background:var(--ink);color:var(--paper);
+  line-height:1.55;overflow-x:hidden;-webkit-font-smoothing:antialiased;min-height:100vh}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 20px;position:relative}
+h1,h2,h3{font-family:'Playfair Display',Georgia,serif;line-height:1.1;font-weight:900;letter-spacing:-.01em}
+a{color:inherit;text-decoration:none}
+img{max-width:100%;display:block}
+.gold{background:var(--grad-gold);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+body{
+  background:
+    radial-gradient(900px 620px at 84% -12%,rgba(201,161,78,.16),transparent 62%),
+    radial-gradient(760px 700px at -8% 112%,rgba(201,161,78,.09),transparent 62%),
+    linear-gradient(165deg,#06080D 0%,#0A0E16 48%,#10151F 100%);
+}
+
+/* progress */
+#progwrap{position:fixed;top:0;left:0;right:0;height:3px;background:rgba(255,255,255,.06);z-index:60}
+#prog{height:100%;width:0%;background:var(--grad-gold);box-shadow:0 0 14px rgba(201,161,78,.6);transition:width .4s cubic-bezier(.19,1,.22,1)}
+
+main{padding:40px 0 60px;min-height:100vh;display:flex;flex-direction:column;justify-content:center}
+.stepwrap{display:flex;flex-direction:column;gap:22px}
+.eyebrow{font-size:11.5px;letter-spacing:.22em;text-transform:uppercase;font-weight:700;color:var(--gold-l);display:flex;align-items:center;gap:8px}
+.eyebrow .n{color:var(--muted)}
+
+.q-title{font-size:clamp(22px,5.5vw,30px);color:#fff}
+.q-sub{color:var(--muted2);font-size:15px;margin-top:6px}
+
+.opts{display:flex;flex-direction:column;gap:10px;margin-top:8px}
+.opt{display:flex;align-items:center;gap:14px;text-align:left;width:100%;border:1px solid var(--line);
+  background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,.012));
+  color:var(--paper);border-radius:14px;padding:17px 18px;font-size:15.5px;font-weight:600;cursor:pointer;
+  transition:transform .2s,border-color .2s,background .2s;font-family:inherit}
+.opt:hover{border-color:rgba(240,217,160,.5);background:rgba(240,217,160,.06);transform:translateY(-2px)}
+.opt .ic{flex:none;width:30px;height:30px;border-radius:9px;background:rgba(201,161,78,.14);color:var(--gold-l);
+  display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;box-shadow:inset 0 0 0 1px rgba(240,217,160,.25)}
+
+.hero-intro{text-align:center;display:flex;flex-direction:column;align-items:center;gap:18px}
+.seal{display:inline-flex;align-items:center;gap:8px;font-size:11px;letter-spacing:.09em;text-transform:uppercase;font-weight:800;
+  color:#120D04;background:var(--grad-gold);padding:9px 16px;border-radius:40px;box-shadow:0 8px 24px -8px rgba(201,161,78,.6)}
+.hero-intro h1{font-size:clamp(26px,6.5vw,36px);color:#fff}
+.hero-intro p{color:var(--muted2);font-size:16px;max-width:420px}
+
+.btn{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:10px;font-weight:700;font-size:17px;
+  padding:18px 30px;border-radius:12px;cursor:pointer;border:none;text-align:center;overflow:hidden;width:100%;font-family:inherit;
+  transition:transform .25s cubic-bezier(.2,.8,.2,1),box-shadow .25s}
+.btn-gold{background:var(--grad-gold);color:#140E03;box-shadow:0 12px 34px -10px rgba(201,161,78,.65),inset 0 1px 0 rgba(255,255,255,.55)}
+.btn-gold::after{content:'';position:absolute;top:0;left:-70%;width:45%;height:100%;transform:skewX(-20deg);
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.55),transparent);animation:sheen 4.5s ease-in-out infinite}
+@keyframes sheen{0%,62%{left:-70%}85%,100%{left:130%}}
+.btn-gold:hover{transform:translateY(-3px)}
+.btn[disabled]{opacity:.55;pointer-events:none}
+
+.back{color:var(--muted);font-size:13.5px;font-weight:600;display:inline-flex;align-items:center;gap:6px;cursor:pointer;align-self:flex-start;background:none;border:none;font-family:inherit;padding:6px 0}
+.back:hover{color:var(--gold-l)}
+
+/* loading step */
+.loading{text-align:center;display:flex;flex-direction:column;align-items:center;gap:20px;padding:30px 0}
+.spinner{width:46px;height:46px;border-radius:50%;border:3px solid rgba(240,217,160,.18);border-top-color:var(--gold-l);animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading p{color:var(--muted2);font-size:15px}
+.loading .line{font-family:'Playfair Display',serif;font-style:italic;color:#fff;font-size:18px}
+
+/* ===== RESULT / MINI LANDING ===== */
+.result{display:none}
+.result.show{display:block}
+.r-top{text-align:center;margin-bottom:28px}
+.r-top .seal{margin-bottom:14px}
+.r-top h1{font-size:clamp(24px,6vw,32px);color:#fff}
+.r-diag{background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.012));border:1px solid var(--line);
+  border-radius:16px;padding:18px 20px;margin:18px 0 26px}
+.r-diag .tag{font-size:11px;letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:var(--gold-l);margin-bottom:6px}
+.r-diag p{color:var(--muted2);font-size:14.5px}
+.r-diag b{color:#fff}
+
+.proofbar{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:26px}
+.stat{background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:12px;padding:14px;text-align:center}
+.stat .v{font-family:'Playfair Display',serif;font-weight:900;font-size:24px;background:var(--grad-gold);
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.stat .l{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:4px;font-weight:600}
+
+.r-list{list-style:none;display:flex;flex-direction:column;gap:11px;margin:0 0 26px}
+.r-list li{display:flex;gap:11px;align-items:flex-start;color:#E7E9EE;font-size:14.5px}
+.r-list li .c{flex:none;color:var(--gold-l);font-weight:800}
+
+.price-card{position:relative;border-radius:22px;padding:30px 24px 26px;text-align:center;
+  background:linear-gradient(180deg,#141A25,#080B12);box-shadow:0 30px 70px -24px rgba(0,0,0,.9),0 0 50px -18px rgba(201,161,78,.45);
+  margin-bottom:18px}
+.price-card::before{content:'';position:absolute;inset:0;border-radius:22px;padding:1px;background:var(--grad-gold);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}
+.price-card .tag{position:absolute;top:-13px;left:50%;transform:translateX(-50%);white-space:nowrap}
+.price-old{font-size:16px;color:var(--muted);text-decoration:line-through;text-decoration-color:rgba(224,119,107,.8);margin-top:14px}
+.price-now{font-family:'Playfair Display',serif;font-weight:900;font-size:clamp(46px,12vw,58px);color:#fff;line-height:1;margin:4px 0;letter-spacing:-.02em}
+.price-now .cur{font-size:.4em;color:var(--gold-l);vertical-align:super;font-weight:700;margin-right:3px}
+.price-sub{color:var(--muted);font-size:12.5px;margin-bottom:20px}
+.price-note{margin-top:14px;font-size:11.5px;color:var(--muted);line-height:1.5}
+
+.assure{display:flex;justify-content:center;gap:14px;flex-wrap:wrap;font-size:11.5px;color:var(--muted);margin-bottom:10px}
+.assure span{display:inline-flex;align-items:center;gap:5px}
+.check{color:var(--gold-l)}
+
+footer.disc{color:#6B6F7A;font-size:11px;text-align:center;padding:30px 0 10px;line-height:1.6}
+</style>
+</head>
+<body>
+
+<div id="progwrap"><div id="prog"></div></div>
+
+<main class="wrap">
+  <div id="app"></div>
+</main>
+
+<footer class="disc wrap">Não há promessa de resultado. Os resultados variam conforme produto, praça, verba e execução. Este produto não é afiliado ao Meta/Facebook.</footer>
+
+<script>
+var CHECKOUT_URL = "https://pay.kiwify.com.br/2a2yZPt";
+var answers = {};
+var idx = 0;
+
+var steps = [
+  {
+    type: "intro",
+    render: function(){
+      return '<div class="hero-intro">'+
+        '<span class="seal">✦ Diagnóstico gratuito · 30 segundos</span>'+
+        '<h1>Sua campanha não vende.<br><span class="gold">Vamos descobrir por quê.</span></h1>'+
+        '<p>Responda 3 perguntas rápidas e eu te mostro exatamente o que está travando o seu resultado — e o caminho pra destravar.</p>'+
+        '<button class="btn btn-gold" id="btnStart">Iniciar diagnóstico →</button>'+
+        '</div>';
+    },
+    bind: function(){
+      document.getElementById("btnStart").onclick = function(){ goTo(1); };
+    }
+  },
+  {
+    type: "question",
+    key: "situacao",
+    title: "Qual sua situação hoje com tráfego pago?",
+    sub: "Isso muda completamente o diagnóstico.",
+    options: [
+      {v:"nunca", label:"Nunca anunciei — não sei nem por onde começar"},
+      {v:"tentou", label:"Já anunciei, mas não vendi nada"},
+      {v:"escalar", label:"Já vendo algo, quero escalar"}
+    ]
+  },
+  {
+    type: "question",
+    key: "gargalo",
+    title: "Qual o seu maior gargalo agora?",
+    sub: "Seja honesto — é isso que vamos resolver.",
+    options: [
+      {v:"estrutura", label:"Não sei estruturar a campanha certa"},
+      {v:"whatsapp", label:"O lead chega, mas não responde no WhatsApp"},
+      {v:"gasto", label:"Gasto verba e não sei se está funcionando"}
+    ]
+  },
+  {
+    type: "question",
+    key: "nicho",
+    title: "Seu produto ou negócio é:",
+    sub: "Última pergunta.",
+    options: [
+      {v:"mcmv", label:"Imóveis MCMV"},
+      {v:"altopadrao", label:"Imóveis alto padrão"},
+      {v:"outro", label:"Outro negócio local"}
+    ]
+  },
+  { type: "loading" },
+  { type: "result" }
+];
+
+var DIAG = {
+  estrutura: {
+    tag: "Gargalo identificado: estrutura de campanha",
+    text: "Você está perdendo verba porque a campanha não tem a <b>estrutura validada</b> (1 campanha × 4 conjuntos × 3-4 criativos). É o Capítulo 1 do Código VGV — passo a passo, tela a tela.",
+    highlight: "A campanha validada, tela a tela — do botão Criar ao publicar."
+  },
+  whatsapp: {
+    tag: "Gargalo identificado: conversão do lead",
+    text: "O problema não é o anúncio, é o <b>roteiro de qualificação</b> que falta depois que o lead chega. O Código VGV te dá o roteiro certo e a régua de follow-up pronta.",
+    highlight: "Roteiro de qualificação e régua de follow-up que vira conversa em visita."
+  },
+  gasto: {
+    tag: "Gargalo identificado: otimização e controle",
+    text: "Você está caindo nas <b>pegadinhas da Meta</b> — Advantage+ reativando sozinho, gasto escondido em posicionamento. Tudo isso está mapeado no Código VGV.",
+    highlight: "As pegadinhas da Meta — gasto escondido e recomendações que sabotam seu criativo, tudo mapeado."
+  }
+};
+var NICHO_LABEL = { mcmv:"MCMV", altopadrao:"alto padrão", outro:"o seu nicho" };
+
+function sanitize(s){ return String(s||"").replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]}) }
+
+function render(){
+  var s = steps[idx];
+  var app = document.getElementById("app");
+  var progPct = Math.min(100, Math.round((idx/(steps.length-2))*100));
+  document.getElementById("prog").style.width = progPct + "%";
+
+  if(s.type === "intro"){
+    app.innerHTML = s.render();
+    s.bind();
+    return;
+  }
+
+  if(s.type === "question"){
+    var qnum = idx; // 1,2,3
+    var html = '<div class="stepwrap">';
+    if(idx>1) html += '<button class="back" id="btnBack">← voltar</button>';
+    html += '<div class="eyebrow"><span class="n">Pergunta '+qnum+' de 3</span></div>'+
+      '<div><h2 class="q-title">'+s.title+'</h2><p class="q-sub">'+s.sub+'</p></div>'+
+      '<div class="opts">';
+    s.options.forEach(function(o,i){
+      html += '<button class="opt" data-v="'+o.v+'"><span class="ic">'+String.fromCharCode(65+i)+'</span><span>'+o.label+'</span></button>';
+    });
+    html += '</div></div>';
+    app.innerHTML = html;
+    if(idx>1) document.getElementById("btnBack").onclick = function(){ goTo(idx-1); };
+    app.querySelectorAll(".opt").forEach(function(btn){
+      btn.onclick = function(){
+        answers[s.key] = btn.getAttribute("data-v");
+        goTo(idx+1);
+      };
+    });
+    return;
+  }
+
+  if(s.type === "loading"){
+    app.innerHTML = '<div class="loading"><div class="spinner"></div>'+
+      '<p class="line">Cruzando suas respostas com o método validado...</p>'+
+      '<p>Preparando seu diagnóstico personalizado</p></div>';
+    setTimeout(function(){ goTo(idx+1); }, 1600);
+    return;
+  }
+
+  if(s.type === "result"){
+    var diag = DIAG[answers.gargalo] || DIAG.estrutura;
+    var nicho = NICHO_LABEL[answers.nicho] || "o seu mercado";
+    app.innerHTML =
+      '<div class="result show">'+
+        '<div class="r-top">'+
+          '<span class="seal">✦ Seu diagnóstico está pronto</span>'+
+          '<h1>'+diag.tag+'</h1>'+
+        '</div>'+
+        '<div class="r-diag"><div class="tag">Pra quem atua com '+sanitize(nicho)+'</div><p>'+diag.text+'</p></div>'+
+        '<div class="proofbar">'+
+          '<div class="stat"><div class="v">9</div><div class="l">Vendas em 30 dias</div></div>'+
+          '<div class="stat"><div class="v">12,41x</div><div class="l">ROAS na campanha</div></div>'+
+        '</div>'+
+        '<ul class="r-list">'+
+          '<li><span class="c">✓</span> '+diag.highlight+'</li>'+
+          '<li><span class="c">✓</span> Segmentação pronta para MCMV e alto padrão</li>'+
+          '<li><span class="c">✓</span> Modelos de copy e roteiro de atendimento no WhatsApp</li>'+
+          '<li><span class="c">✓</span> Acesso imediato e vitalício, direto no seu e-mail</li>'+
+        '</ul>'+
+        '<div class="price-card">'+
+          '<div class="tag"><span class="seal">Oferta de lançamento</span></div>'+
+          '<div style="font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold-l);font-weight:800;margin-top:6px">Código VGV — Ebook completo</div>'+
+          '<div class="price-old">De R$ 450</div>'+
+          '<div class="price-now"><span class="cur">R$</span>9,90</div>'+
+          '<div class="price-sub">pagamento único · acesso imediato e vitalício</div>'+
+          '<button class="btn btn-gold" id="btnCheckout">Resolver isso agora por R$ 9,90 →</button>'+
+          '<div class="price-note">Pagamento seguro · Kiwify. Não há promessa de resultado: os resultados variam conforme produto, praça, execução e verba.</div>'+
+        '</div>'+
+        '<div class="assure">'+
+          '<span><span class="check">✓</span> Acesso imediato</span>'+
+          '<span><span class="check">✓</span> PDF + passo a passo real</span>'+
+          '<span><span class="check">✓</span> Do anúncio ao WhatsApp</span>'+
+        '</div>'+
+      '</div>';
+    document.getElementById("btnCheckout").onclick = function(){
+      try{ fbq('track','InitiateCheckout'); }catch(e){}
+      try{ ttq.track('InitiateCheckout'); }catch(e){}
+      window.location.href = CHECKOUT_URL;
+    };
+    return;
+  }
+}
+
+function goTo(i){
+  idx = i;
+  window.scrollTo({top:0,behavior:"instant"});
+  render();
+}
+
+render();
+</script>
+
+</body>
+</html>
