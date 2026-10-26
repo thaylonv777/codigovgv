@@ -178,9 +178,27 @@ footer.disc{color:#6B6F7A;font-size:11px;text-align:center;padding:30px 0 10px;l
 
 <script>
 var CHECKOUT_URL = "https://pay.kiwify.com.br/2a2yZPt";
+var STEP_WEBHOOK_URL = "https://n8n.manuai.com.br/webhook/funil-vgv-step";
 var answers = {};
 var idx = 0;
 var TOTAL_INTERACTIVE = 4; // 2 perguntas + 2 etapas de método (pra barra de progresso)
+
+function sessionId(){
+  try{
+    var k="vgv_sid", v=sessionStorage.getItem(k);
+    if(!v){ v=Date.now().toString(36)+Math.random().toString(36).slice(2,10); sessionStorage.setItem(k,v); }
+    return v;
+  }catch(e){ return "nosess-"+Date.now(); }
+}
+function trackStep(s){
+  try{
+    fetch(STEP_WEBHOOK_URL,{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({session_id:sessionId(),step_index:idx,step_total:steps.length,step_label:(s.title||s.type),step_type:s.type,origem:"quiz-vgv",respostas_ate_aqui:JSON.stringify(answers)})
+    }).catch(function(){});
+  }catch(e){}
+}
 
 var steps = [
   {
@@ -262,6 +280,7 @@ function render(){
   var app = document.getElementById("app");
   var progPct = Math.min(100, Math.round((idx/TOTAL_INTERACTIVE)*100));
   document.getElementById("prog").style.width = progPct + "%";
+  trackStep(s);
 
   if(s.type === "intro"){
     app.innerHTML = s.render();
@@ -354,6 +373,11 @@ function render(){
     document.getElementById("btnCheckout").onclick = function(){
       try{ fbq('track','InitiateCheckout'); }catch(e){}
       try{ ttq.track('InitiateCheckout'); }catch(e){}
+      try{
+        fetch(STEP_WEBHOOK_URL,{method:"POST",headers:{"Content-Type":"application/json"},
+          body:JSON.stringify({session_id:sessionId(),step_index:idx,step_total:steps.length,step_label:"Checkout (clicou comprar)",step_type:"checkout_click",origem:"quiz-vgv",respostas_ate_aqui:JSON.stringify(answers)})
+        }).catch(function(){});
+      }catch(e){}
       window.location.href = CHECKOUT_URL;
     };
     return;
