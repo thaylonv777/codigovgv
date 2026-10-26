@@ -125,6 +125,18 @@ main{padding:40px 0 60px;min-height:100vh;display:flex;flex-direction:column;jus
 .r-diag p{color:var(--muted2);font-size:14.5px}
 .r-diag b{color:#fff}
 
+.video-wrap{margin-bottom:22px}
+.video-frame{position:relative;aspect-ratio:9/16;max-height:420px;max-width:260px;margin:0 auto;border-radius:18px;overflow:hidden;background:#000;
+  border:1px solid rgba(240,217,160,.28);box-shadow:0 30px 60px -22px rgba(0,0,0,.9),0 0 40px -14px rgba(201,161,78,.35)}
+.video-frame iframe{width:100%;height:100%;border:0;display:block}
+.video-quote{font-family:'Playfair Display',serif;font-style:italic;font-size:15.5px;color:#fff;text-align:center;
+  max-width:420px;margin:16px auto 0;padding:0 10px}
+.video-name{color:var(--muted);font-size:12px;text-align:center;margin-top:8px}
+
+.reaffirm{text-align:center;margin:0 0 24px;padding:20px 18px;border-radius:16px;
+  background:radial-gradient(120% 140% at 50% 0%,rgba(201,161,78,.12),transparent 70%);border:1px solid var(--line)}
+.reaffirm p{font-family:'Playfair Display',serif;font-style:italic;font-size:16.5px;color:#fff;line-height:1.4}
+
 .proofbar{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:26px}
 .stat{background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:12px;padding:14px;text-align:center}
 .stat .v{font-family:'Playfair Display',serif;font-weight:900;font-size:24px;background:var(--grad-gold);
@@ -168,15 +180,16 @@ footer.disc{color:#6B6F7A;font-size:11px;text-align:center;padding:30px 0 10px;l
 var CHECKOUT_URL = "https://pay.kiwify.com.br/2a2yZPt";
 var answers = {};
 var idx = 0;
+var TOTAL_INTERACTIVE = 4; // 2 perguntas + 2 etapas de método (pra barra de progresso)
 
 var steps = [
   {
     type: "intro",
     render: function(){
       return '<div class="hero-intro">'+
-        '<span class="seal">✦ Diagnóstico gratuito · 30 segundos</span>'+
-        '<h1>Sua campanha não vende.<br><span class="gold">Vamos descobrir por quê.</span></h1>'+
-        '<p>Responda 3 perguntas rápidas e eu te mostro exatamente o que está travando o seu resultado — e o caminho pra destravar.</p>'+
+        '<span class="seal">✦ O método validado que gerou 9 vendas em 30 dias</span>'+
+        '<h1>Sua campanha não precisa de sorte.<br><span class="gold">Precisa de um código.</span></h1>'+
+        '<p>O <b style="color:#fff">Código VGV</b> é a metodologia validada que vai destravar suas campanhas de uma vez por todas. Campanhas que vendem. Responda 2 perguntas e eu te mostro exatamente onde você está rasgando dinheiro.</p>'+
         '<button class="btn btn-gold" id="btnStart">Iniciar diagnóstico →</button>'+
         '</div>';
     },
@@ -187,35 +200,38 @@ var steps = [
   {
     type: "question",
     key: "situacao",
-    title: "Qual sua situação hoje com tráfego pago?",
-    sub: "Isso muda completamente o diagnóstico.",
+    title: "Hoje, como está sua campanha de anúncios?",
+    sub: "Isso define o seu ponto de partida no método.",
     options: [
-      {v:"nunca", label:"Nunca anunciei — não sei nem por onde começar"},
-      {v:"tentou", label:"Já anunciei, mas não vendi nada"},
-      {v:"escalar", label:"Já vendo algo, quero escalar"}
+      {v:"nunca", label:"Nunca rodei uma campanha de verdade"},
+      {v:"tentou", label:"Já invisto, mas não vejo volta real"},
+      {v:"escalar", label:"Já vendo, quero vender muito mais"}
     ]
   },
   {
     type: "question",
     key: "gargalo",
-    title: "Qual o seu maior gargalo agora?",
-    sub: "Seja honesto — é isso que vamos resolver.",
+    title: "O que mais pesa no seu bolso agora?",
+    sub: "Seja direto — é exatamente isso que o método ataca.",
     options: [
-      {v:"estrutura", label:"Não sei estruturar a campanha certa"},
-      {v:"whatsapp", label:"O lead chega, mas não responde no WhatsApp"},
-      {v:"gasto", label:"Gasto verba e não sei se está funcionando"}
+      {v:"gasto", label:"Gasto verba todo mês e não sei se funciona"},
+      {v:"lead", label:"O lead chega, mas a venda não fecha"},
+      {v:"estrutura", label:"Não sei estruturar a campanha certa"}
     ]
   },
   {
-    type: "question",
-    key: "nicho",
-    title: "Seu produto ou negócio é:",
-    sub: "Última pergunta.",
-    options: [
-      {v:"mcmv", label:"Imóveis MCMV"},
-      {v:"altopadrao", label:"Imóveis alto padrão"},
-      {v:"outro", label:"Outro negócio local"}
-    ]
+    type: "statement",
+    eyebrow: "O que o método revela",
+    title: "Toda campanha que não vende tem o mesmo defeito.",
+    body: "Não é sorte, não é o produto, não é o nicho. É falta de estrutura. O Código VGV é a estrutura exata — 1 campanha, 4 conjuntos, 3 a 4 criativos — que transforma anúncio em comprador qualificado no seu WhatsApp. Testada, validada, repetível.",
+    cta: "Continuar →"
+  },
+  {
+    type: "statement",
+    eyebrow: "O custo de esperar",
+    title: "Cada dia sem o código certo é dinheiro saindo do seu bolso.",
+    body: "Enquanto você ajusta orçamento no escuro, alguém com a estrutura certa está fechando venda com a mesma verba que você está desperdiçando agora. O método já está pronto. Falta só você aplicar.",
+    cta: "Ver meu diagnóstico →"
   },
   { type: "loading" },
   { type: "result" }
@@ -223,29 +239,28 @@ var steps = [
 
 var DIAG = {
   estrutura: {
-    tag: "Gargalo identificado: estrutura de campanha",
-    text: "Você está perdendo verba porque a campanha não tem a <b>estrutura validada</b> (1 campanha × 4 conjuntos × 3-4 criativos). É o Capítulo 1 do Código VGV — passo a passo, tela a tela.",
+    tag: "Você está rasgando dinheiro por falta de estrutura",
+    text: "Sem a <b>estrutura validada</b> (1 campanha × 4 conjuntos × 3-4 criativos), sua verba se espalha e some. É o Capítulo 1 do Código VGV — passo a passo, tela a tela, do botão Criar ao publicar.",
     highlight: "A campanha validada, tela a tela — do botão Criar ao publicar."
   },
-  whatsapp: {
-    tag: "Gargalo identificado: conversão do lead",
-    text: "O problema não é o anúncio, é o <b>roteiro de qualificação</b> que falta depois que o lead chega. O Código VGV te dá o roteiro certo e a régua de follow-up pronta.",
-    highlight: "Roteiro de qualificação e régua de follow-up que vira conversa em visita."
+  lead: {
+    tag: "Você está deixando de faturar o que já poderia",
+    text: "O problema não é o anúncio, é o <b>roteiro de qualificação</b> que falta depois que o lead chega. O Código VGV te dá o roteiro certo e a régua de follow-up que vira conversa em venda.",
+    highlight: "Roteiro de qualificação e régua de follow-up que vira conversa em venda."
   },
   gasto: {
-    tag: "Gargalo identificado: otimização e controle",
-    text: "Você está caindo nas <b>pegadinhas da Meta</b> — Advantage+ reativando sozinho, gasto escondido em posicionamento. Tudo isso está mapeado no Código VGV.",
+    tag: "Você está rasgando dinheiro sem saber onde",
+    text: "Você está caindo nas <b>pegadinhas da Meta</b> — Advantage+ reativando sozinho, gasto escondido em posicionamento. Tudo isso está mapeado, tela a tela, no Código VGV.",
     highlight: "As pegadinhas da Meta — gasto escondido e recomendações que sabotam seu criativo, tudo mapeado."
   }
 };
-var NICHO_LABEL = { mcmv:"MCMV", altopadrao:"alto padrão", outro:"o seu nicho" };
 
 function sanitize(s){ return String(s||"").replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]}) }
 
 function render(){
   var s = steps[idx];
   var app = document.getElementById("app");
-  var progPct = Math.min(100, Math.round((idx/(steps.length-2))*100));
+  var progPct = Math.min(100, Math.round((idx/TOTAL_INTERACTIVE)*100));
   document.getElementById("prog").style.width = progPct + "%";
 
   if(s.type === "intro"){
@@ -255,10 +270,9 @@ function render(){
   }
 
   if(s.type === "question"){
-    var qnum = idx; // 1,2,3
     var html = '<div class="stepwrap">';
     if(idx>1) html += '<button class="back" id="btnBack">← voltar</button>';
-    html += '<div class="eyebrow"><span class="n">Pergunta '+qnum+' de 3</span></div>'+
+    html += '<div class="eyebrow"><span class="n">Etapa '+idx+' de '+TOTAL_INTERACTIVE+'</span></div>'+
       '<div><h2 class="q-title">'+s.title+'</h2><p class="q-sub">'+s.sub+'</p></div>'+
       '<div class="opts">';
     s.options.forEach(function(o,i){
@@ -276,6 +290,19 @@ function render(){
     return;
   }
 
+  if(s.type === "statement"){
+    var html = '<div class="stepwrap">';
+    html += '<button class="back" id="btnBack">← voltar</button>';
+    html += '<div class="eyebrow"><span class="n">Etapa '+idx+' de '+TOTAL_INTERACTIVE+'</span></div>'+
+      '<div><p class="q-sub" style="margin-bottom:8px">'+s.eyebrow+'</p><h2 class="q-title">'+s.title+'</h2><p class="q-sub" style="margin-top:12px">'+s.body+'</p></div>'+
+      '<button class="btn btn-gold" id="btnNext">'+s.cta+'</button>'+
+      '</div>';
+    app.innerHTML = html;
+    document.getElementById("btnBack").onclick = function(){ goTo(idx-1); };
+    document.getElementById("btnNext").onclick = function(){ goTo(idx+1); };
+    return;
+  }
+
   if(s.type === "loading"){
     app.innerHTML = '<div class="loading"><div class="spinner"></div>'+
       '<p class="line">Cruzando suas respostas com o método validado...</p>'+
@@ -286,22 +313,26 @@ function render(){
 
   if(s.type === "result"){
     var diag = DIAG[answers.gargalo] || DIAG.estrutura;
-    var nicho = NICHO_LABEL[answers.nicho] || "o seu mercado";
     app.innerHTML =
       '<div class="result show">'+
         '<div class="r-top">'+
           '<span class="seal">✦ Seu diagnóstico está pronto</span>'+
           '<h1>'+diag.tag+'</h1>'+
         '</div>'+
-        '<div class="r-diag"><div class="tag">Pra quem atua com '+sanitize(nicho)+'</div><p>'+diag.text+'</p></div>'+
+        '<div class="r-diag"><p>'+diag.text+'</p></div>'+
+        '<div class="video-wrap"><div class="video-frame"><iframe src="https://www.youtube.com/embed/2ewkU2yamJ4?rel=0&modestbranding=1" title="Depoimento — resultado real com o método" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>'+
+          '<p class="video-quote">"Foi a estrutura de campanha certa, para o comprador certo, na hora certa de comprar."</p>'+
+          '<p class="video-name">Case real de campanha gerida pela Método Átrio.</p>'+
+        '</div>'+
         '<div class="proofbar">'+
           '<div class="stat"><div class="v">9</div><div class="l">Vendas em 30 dias</div></div>'+
           '<div class="stat"><div class="v">12,41x</div><div class="l">ROAS na campanha</div></div>'+
         '</div>'+
+        '<div class="reaffirm"><p>Vou te pegar pela mão com essa metodologia — e você vai subir campanhas que vendem.</p></div>'+
         '<ul class="r-list">'+
           '<li><span class="c">✓</span> '+diag.highlight+'</li>'+
-          '<li><span class="c">✓</span> Segmentação pronta para MCMV e alto padrão</li>'+
-          '<li><span class="c">✓</span> Modelos de copy e roteiro de atendimento no WhatsApp</li>'+
+          '<li><span class="c">✓</span> A campanha validada, tela a tela — do botão Criar ao publicar</li>'+
+          '<li><span class="c">✓</span> Modelos de copy e roteiro de atendimento que fecham venda</li>'+
           '<li><span class="c">✓</span> Acesso imediato e vitalício, direto no seu e-mail</li>'+
         '</ul>'+
         '<div class="price-card">'+
@@ -310,13 +341,13 @@ function render(){
           '<div class="price-old">De R$ 450</div>'+
           '<div class="price-now"><span class="cur">R$</span>9,90</div>'+
           '<div class="price-sub">pagamento único · acesso imediato e vitalício</div>'+
-          '<button class="btn btn-gold" id="btnCheckout">Resolver isso agora por R$ 9,90 →</button>'+
+          '<button class="btn btn-gold" id="btnCheckout">👉 Compre agora e aplique no mesmo dia →</button>'+
           '<div class="price-note">Pagamento seguro · Kiwify. Não há promessa de resultado: os resultados variam conforme produto, praça, execução e verba.</div>'+
         '</div>'+
         '<div class="assure">'+
           '<span><span class="check">✓</span> Acesso imediato</span>'+
           '<span><span class="check">✓</span> PDF + passo a passo real</span>'+
-          '<span><span class="check">✓</span> Do anúncio ao WhatsApp</span>'+
+          '<span><span class="check">✓</span> Do anúncio à venda</span>'+
         '</div>'+
       '</div>';
     document.getElementById("btnCheckout").onclick = function(){
