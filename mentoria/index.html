@@ -70,14 +70,20 @@ main{min-height:100vh;display:flex;flex-direction:column;justify-content:center;
 .card .sub{color:var(--muted2);font-size:16px;max-width:460px}
 .card .sub b{color:#fff;font-weight:600}
 
+.mentor{display:flex;align-items:center;gap:12px;padding:8px 16px 8px 8px;border:1px solid var(--line);border-radius:999px;
+  background:rgba(255,255,255,.03)}
+.mentor img{width:52px;height:52px;border-radius:50%;object-fit:cover;box-shadow:0 0 0 2px rgba(240,217,160,.4)}
+.mentor-info{display:flex;flex-direction:column;align-items:flex-start;text-align:left}
+.mentor-info b{color:#fff;font-size:14px;font-weight:700}
+.mentor-info span{color:var(--muted);font-size:12px}
+
 .deliver{list-style:none;display:flex;flex-direction:column;gap:9px;text-align:left;width:100%;max-width:400px;margin:6px 0}
 .deliver li{display:flex;gap:10px;align-items:flex-start;color:#E7E9EE;font-size:14.5px}
 .deliver li .c{flex:none;color:var(--gold-l);font-weight:800}
 
 .price-card{position:relative;width:100%;border-radius:22px;padding:26px 24px 22px;text-align:center;
-  background:linear-gradient(180deg,#141A25,#080B12);box-shadow:0 30px 70px -24px rgba(0,0,0,.9),0 0 50px -18px rgba(201,161,78,.45)}
-.price-card::before{content:'';position:absolute;inset:0;border-radius:22px;padding:1px;background:var(--grad-gold);
-  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}
+  background:linear-gradient(180deg,#141A25,#080B12);border:1px solid var(--line);
+  box-shadow:0 30px 70px -24px rgba(0,0,0,.9),0 0 50px -18px rgba(201,161,78,.3)}
 .price-now{font-family:'Playfair Display',serif;font-weight:900;font-size:clamp(44px,11vw,56px);color:#fff;line-height:1;margin:2px 0;letter-spacing:-.02em}
 .price-now .cur{font-size:.4em;color:var(--gold-l);vertical-align:super;font-weight:700;margin-right:3px}
 .price-parcel{font-size:13.5px;color:var(--gold-l);font-weight:700;margin-bottom:4px}
@@ -109,8 +115,17 @@ footer.disc{color:#6B6F7A;font-size:10.5px;text-align:center;padding:18px 0 4px;
     <h1>Uma hora comigo pra<br><span class="gold">destravar sua campanha.</span></h1>
     <p class="sub">Mentoria <b>individual, 1 a 1</b>. Você traz sua conta de anúncios, eu reviso a estrutura ao vivo e saímos com um plano de ação pra ela vender.</p>
 
+    <div class="mentor">
+      <picture>
+        <source srcset="mentor-thaylon.webp" type="image/webp">
+        <img src="mentor-thaylon.jpg" alt="Thaylon Vieira" width="64" height="64">
+      </picture>
+      <div class="mentor-info"><b>Thaylon Vieira</b><span>Estrategista de tráfego · Método Átrio</span></div>
+    </div>
+
     <ul class="deliver">
       <li><span class="c">✓</span> Revisão completa da sua campanha, ao vivo, comigo</li>
+      <li><span class="c">✓</span> Reunião por Google Meet, direto do seu computador</li>
       <li><span class="c">✓</span> Diagnóstico do que está travando o resultado</li>
       <li><span class="c">✓</span> Plano de ação por escrito pra aplicar no mesmo dia</li>
       <li><span class="c">✓</span> Direto comigo, sem intermediário</li>
