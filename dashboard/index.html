@@ -83,6 +83,10 @@ body{margin:0;background:var(--bg);color:var(--fg);font-family:"Inter",system-ui
 .ab-row span:first-child{color:var(--muted)}
 .ab-row b{color:var(--fg)}
 .ab-note{font-size:11.5px;color:var(--muted);margin:0 0 26px}
+.sess-src{flex:none;font-size:11px;font-weight:700;border-radius:999px;padding:2px 8px;color:#fff}
+.src-tt{background:#111;box-shadow:inset 0 0 0 1px #25F4EE,2px 0 0 #FE2C55}
+.src-meta{background:#0866FF}
+.src-other{background:#3A3F4B}
 .sess-price{font-size:11px;font-weight:700;color:#140E03;background:var(--gold);border-radius:999px;padding:2px 8px}
 </style>
 </head>
@@ -194,8 +198,13 @@ function render(data){
     sess.innerHTML = '<div class="empty">Nenhuma sessão registrada ainda.</div>';
   }else{
     sess.innerHTML = list.map(function(s,i){
-      var qas = Object.keys(s.respostas||{}).filter(function(k){ return k !== "preco"; });
+      var qas = Object.keys(s.respostas||{}).filter(function(k){ return k !== "preco" && k !== "origem"; });
       var preco = (s.respostas||{}).preco;
+      var origem = String((s.respostas||{}).origem||"");
+      var origemHtml = origem
+        ? '<span class="sess-src '+(origem==="tiktok"?"src-tt":origem==="meta"?"src-meta":"src-other")+'">'+
+            esc(origem==="tiktok"?"TikTok":origem==="meta"?"Meta":origem)+'</span>'
+        : '';
       var answersHtml = qas.length
         ? qas.map(function(q){ return '<div class="ans-row"><span class="ans-q">'+esc(q)+'</span><span class="ans-a">'+esc(s.respostas[q])+'</span></div>'; }).join("")
         : '<div class="ans-empty">Nenhuma pergunta respondida ainda (abandonou antes).</div>';
@@ -204,6 +213,7 @@ function render(data){
         '<div class="sess-head">'+
           '<span class="sess-id">'+esc(s.session_id)+'</span>'+
           '<div class="sess-right">'+
+            origemHtml+
             (preco ? '<span class="sess-price">R$ '+esc(preco)+'</span>' : '')+
             '<span class="sess-step">'+esc(s.step_label)+'</span>'+
             '<span class="sess-count">'+qas.length+' resp.</span>'+

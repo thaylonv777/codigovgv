@@ -228,6 +228,38 @@ var PRICE = PRICES[priceVariant()];
 var CHECKOUT_URL = PRICE.url;
 var STEP_WEBHOOK_URL = "https://n8n.manuai.com.br/webhook/funil-vgv-step";
 var answers = { preco: PRICE.label };
+
+// Origem do tráfego (Meta x TikTok): utm_source, fbclid ou ttclid. Fica salvo na sessão.
+var ORIGEM = (function(){
+  var k = "vgv_origem", v = null;
+  try{ v = sessionStorage.getItem(k); }catch(e){}
+  if(v) return v;
+  var q = location.search || "";
+  var m = q.match(/[?&]utm_source=([^&]*)/i);
+  var s = "";
+  try{ s = m ? decodeURIComponent(m[1]).toLowerCase() : ""; }catch(e){ s = m ? m[1].toLowerCase() : ""; }
+  if(/tiktok/.test(s) || /[?&]ttclid=/i.test(q)) v = "tiktok";
+  else if(/^(fb|facebook|ig|instagram|meta|an|msg)\b/.test(s) || /[?&]fbclid=/i.test(q)) v = "meta";
+  else v = s || "direto";
+  try{ sessionStorage.setItem(k, v); }catch(e){}
+  return v;
+})();
+answers.origem = ORIGEM;
+
+// Link da Kiwify com as UTMs da visita (pra venda mostrar a origem lá também)
+function checkoutUrl(){
+  try{
+    var out = [], hasSource = false;
+    (location.search || "").replace(/^\?/, "").split("&").forEach(function(pair){
+      if(!pair) return;
+      var key = pair.split("=")[0].toLowerCase();
+      if(key.indexOf("utm_") === 0){ out.push(pair); if(key === "utm_source") hasSource = true; }
+    });
+    if(!hasSource) out.unshift("utm_source=" + encodeURIComponent(ORIGEM));
+    out.push("src=" + encodeURIComponent(ORIGEM));
+    return CHECKOUT_URL + (CHECKOUT_URL.indexOf("?") > -1 ? "&" : "?") + out.join("&");
+  }catch(e){ return CHECKOUT_URL; }
+}
 var idx = 0;
 var TOTAL_INTERACTIVE = 4; // 2 perguntas + 2 etapas de método (pra barra de progresso)
 // progresso já começa preenchido (efeito de progresso dado) e acelera no fim
@@ -446,7 +478,7 @@ function render(){
           body:JSON.stringify({session_id:sessionId(),step_index:idx,step_total:steps.length,step_label:"Checkout (clicou comprar)",step_type:"checkout_click",origem:"quiz-vgv",respostas_ate_aqui:JSON.stringify(answers)})
         }).catch(function(){});
       }catch(e){}
-      window.location.href = CHECKOUT_URL;
+      window.location.href = checkoutUrl();
     };
     return;
   }
