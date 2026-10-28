@@ -69,6 +69,11 @@ body{margin:0;background:var(--bg);color:var(--fg);font-family:"Inter",system-ui
 .ans-q{color:var(--muted);flex:1}
 .ans-a{color:var(--gold-l);font-weight:600;text-align:right;flex:none;max-width:50%}
 .ans-empty{color:var(--muted);font-size:12px}
+.ver{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+.ver button{background:var(--surface);border:1px solid var(--line);color:var(--muted);font-size:12.5px;font-weight:600;
+  padding:7px 14px;border-radius:999px;cursor:pointer;font-family:inherit}
+.ver button.on{color:#140E03;background:var(--gold);border-color:var(--gold)}
+.ver .note{font-size:11.5px;color:var(--muted)}
 </style>
 </head>
 <body>
@@ -79,6 +84,12 @@ body{margin:0;background:var(--bg);color:var(--fg);font-family:"Inter",system-ui
       <div class="sub">Funil do quiz — abandono por etapa</div>
     </div>
     <button class="refresh" id="btnRefresh">↻ Atualizar</button>
+  </div>
+
+  <div class="ver">
+    <button id="vNew" class="on">Versão nova</button>
+    <button id="vOld">Versão anterior</button>
+    <span class="note" id="vNote"></span>
   </div>
 
   <div class="cards" id="cards"></div>
@@ -94,10 +105,23 @@ body{margin:0;background:var(--bg);color:var(--fg);font-family:"Inter",system-ui
 
 <script>
 var STATS_URL = "https://n8n.manuai.com.br/webhook/funil-vgv-stats";
+// data em que o quiz passou a abrir direto na 1ª pergunta (sem tela de intro)
+var V2_SINCE = "2026-10-28T12:30:00Z";
+var version = "new";
+
+function setVersion(v){
+  version = v;
+  document.getElementById("vNew").className = v==="new" ? "on" : "";
+  document.getElementById("vOld").className = v==="old" ? "on" : "";
+  var d = new Date(V2_SINCE).toLocaleString("pt-BR",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"});
+  document.getElementById("vNote").textContent = v==="new" ? ("desde "+d+" · abre direto na pergunta") : ("até "+d+" · com tela de intro");
+  load();
+}
 
 function load(){
   document.getElementById("funnel").innerHTML = '<div class="empty">Carregando...</div>';
-  fetch(STATS_URL).then(function(r){ return r.json(); }).then(render).catch(function(e){
+  var q = version==="new" ? ("?since="+encodeURIComponent(V2_SINCE)) : ("?until="+encodeURIComponent(V2_SINCE));
+  fetch(STATS_URL+q).then(function(r){ return r.json(); }).then(render).catch(function(e){
     document.getElementById("funnel").innerHTML = '<div class="empty">Erro ao carregar dados: '+(e&&e.message||e)+'</div>';
   });
 }
@@ -116,7 +140,11 @@ function render(data){
     '<div class="card"><div class="n">'+convRate+'%</div><div class="l">Chegou até a última etapa</div></div>';
 
   var f = document.getElementById("funnel");
-  if(!steps.length){ f.innerHTML = '<div class="empty">Sem dados ainda. Use o quiz pra gerar eventos.</div>'; return; }
+  if(!steps.length){
+    f.innerHTML = '<div class="empty">Sem dados nesse período ainda.</div>';
+    document.getElementById("sessions").innerHTML = "";
+    return;
+  }
   var html = "";
   steps.forEach(function(s,i){
     var dropClass = s.pct_vs_prev>=70 ? "ok" : "";
@@ -164,7 +192,9 @@ function render(data){
 }
 
 document.getElementById("btnRefresh").onclick = load;
-load();
+document.getElementById("vNew").onclick = function(){ setVersion("new"); };
+document.getElementById("vOld").onclick = function(){ setVersion("old"); };
+setVersion("new");
 </script>
 </body>
 </html>

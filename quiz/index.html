@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Código VGV — Diagnóstico de Campanha</title>
-<meta name="description" content="Responda 3 perguntas e descubra o que está travando sua campanha de tráfego pago — em 30 segundos.">
+<meta name="description" content="Descubra em 30 segundos onde sua campanha de anúncios está perdendo dinheiro.">
 <meta name="robots" content="noindex, follow">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2306080D'/%3E%3Ccircle cx='32' cy='32' r='12' fill='%23C9A14E'/%3E%3C/svg%3E">
 
@@ -38,7 +38,6 @@ var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="preload" as="image" href="../ebook.webp" fetchpriority="high">
 
 <style>
 :root{
@@ -67,10 +66,15 @@ body{
 }
 
 /* progress */
-#progwrap{position:fixed;top:0;left:0;right:0;height:3px;background:rgba(255,255,255,.06);z-index:60}
-#prog{height:100%;width:0%;background:var(--grad-gold);box-shadow:0 0 14px rgba(201,161,78,.6);transition:width .4s cubic-bezier(.19,1,.22,1)}
+.progress{display:flex;flex-direction:column;gap:8px}
+.progress-top{display:flex;justify-content:space-between;align-items:baseline;gap:12px;font-size:12px;font-weight:700;letter-spacing:.04em}
+.progress-top .st{color:var(--gold-l);text-transform:uppercase;letter-spacing:.14em;font-size:11.5px}
+.progress-top .hint{color:var(--muted);font-weight:600}
+.progress-track{height:8px;border-radius:99px;background:rgba(255,255,255,.07);overflow:hidden;box-shadow:inset 0 0 0 1px rgba(240,217,160,.10)}
+.progress-fill{height:100%;border-radius:99px;background:var(--grad-gold);box-shadow:0 0 16px rgba(201,161,78,.55);
+  transition:width .7s cubic-bezier(.19,1,.22,1)}
 
-main{padding:40px 0 60px;min-height:100vh;display:flex;flex-direction:column;justify-content:center}
+main{padding:28px 0 60px;min-height:100vh;display:flex;flex-direction:column;justify-content:center}
 .stepwrap{display:flex;flex-direction:column;gap:22px}
 .eyebrow{font-size:11.5px;letter-spacing:.22em;text-transform:uppercase;font-weight:700;color:var(--gold-l);display:flex;align-items:center;gap:8px}
 .eyebrow .n{color:var(--muted)}
@@ -83,11 +87,19 @@ main{padding:40px 0 60px;min-height:100vh;display:flex;flex-direction:column;jus
   background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,.012));
   color:var(--paper);border-radius:14px;padding:17px 18px;font-size:15.5px;font-weight:600;cursor:pointer;
   transition:transform .2s,border-color .2s,background .2s;font-family:inherit}
-.opt:hover{border-color:rgba(240,217,160,.5);background:rgba(240,217,160,.06);transform:translateY(-2px)}
+@media (hover:hover){.opt:hover{border-color:rgba(240,217,160,.5);background:rgba(240,217,160,.06);transform:translateY(-2px)}}
+.opt:active{border-color:rgba(240,217,160,.6);background:rgba(240,217,160,.08)}
 .opt .ic{flex:none;width:30px;height:30px;border-radius:9px;background:rgba(201,161,78,.14);color:var(--gold-l);
   display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;box-shadow:inset 0 0 0 1px rgba(240,217,160,.25)}
 
 .hero-intro{text-align:center;display:flex;flex-direction:column;align-items:center;gap:18px}
+.hero-q h1{font-size:clamp(27px,7vw,36px);color:#fff}
+.hero-q .lead{color:var(--muted2);font-size:15.5px;margin-top:10px}
+.hero-q .lead b{color:#fff}
+.q-kicker{font-size:12px;letter-spacing:.14em;text-transform:uppercase;font-weight:800;color:var(--gold-l);margin-bottom:6px}
+.hero-q .q-title{font-size:clamp(19px,4.8vw,22px)}
+.safe{display:flex;justify-content:center;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-top:2px}
+.safe span{display:inline-flex;align-items:center;gap:5px}
 .seal{display:inline-flex;align-items:center;gap:8px;font-size:11px;letter-spacing:.09em;text-transform:uppercase;font-weight:800;
   color:#120D04;background:var(--grad-gold);padding:9px 16px;border-radius:40px;box-shadow:0 8px 24px -8px rgba(201,161,78,.6)}
 .hero-intro h1{font-size:clamp(26px,6.5vw,36px);color:#fff}
@@ -168,8 +180,6 @@ footer.disc{color:#6B6F7A;font-size:11px;text-align:center;padding:30px 0 10px;l
 </head>
 <body>
 
-<div id="progwrap"><div id="prog"></div></div>
-
 <main class="wrap">
   <div id="app"></div>
 </main>
@@ -182,6 +192,25 @@ var STEP_WEBHOOK_URL = "https://n8n.manuai.com.br/webhook/funil-vgv-step";
 var answers = {};
 var idx = 0;
 var TOTAL_INTERACTIVE = 4; // 2 perguntas + 2 etapas de método (pra barra de progresso)
+// progresso já começa preenchido (efeito de progresso dado) e acelera no fim
+var PROG = [15, 40, 65, 85, 100];
+var PROG_HINT = ["leva 30 segundos", "faltam 3", "faltam 2", "última etapa", "gerando diagnóstico"];
+var lastPct = 0;
+function progressHTML(){
+  var pct = PROG[Math.min(idx, PROG.length-1)];
+  var stepTxt = idx < TOTAL_INTERACTIVE ? ("Etapa "+(idx+1)+" de "+TOTAL_INTERACTIVE) : "Concluído";
+  return '<div class="progress">'+
+    '<div class="progress-top"><span class="st">'+stepTxt+'</span><span class="hint">'+PROG_HINT[Math.min(idx, PROG_HINT.length-1)]+'</span></div>'+
+    '<div class="progress-track"><div class="progress-fill" data-pct="'+pct+'" style="width:'+lastPct+'%"></div></div>'+
+  '</div>';
+}
+function animateProgress(){
+  var el = document.querySelector(".progress-fill");
+  if(!el) return;
+  var pct = +el.getAttribute("data-pct");
+  requestAnimationFrame(function(){ requestAnimationFrame(function(){ el.style.width = pct+"%"; }); });
+  lastPct = pct;
+}
 
 function sessionId(){
   try{
@@ -195,31 +224,18 @@ function trackStep(s){
     fetch(STEP_WEBHOOK_URL,{
       method:"POST",
       headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({session_id:sessionId(),step_index:idx,step_total:steps.length,step_label:(s.title||s.type),step_type:s.type,origem:"quiz-vgv",respostas_ate_aqui:JSON.stringify(answers)})
+      body:JSON.stringify({session_id:sessionId(),step_index:idx,step_total:steps.length,step_label:(s.label||s.title||s.type),step_type:s.type,origem:"quiz-vgv",respostas_ate_aqui:JSON.stringify(answers)})
     }).catch(function(){});
   }catch(e){}
 }
 
 var steps = [
   {
-    type: "intro",
-    render: function(){
-      return '<div class="hero-intro">'+
-        '<span class="seal">✦ O método validado que gerou 9 vendas em 30 dias</span>'+
-        '<h1>Sua campanha não precisa de sorte.<br><span class="gold">Precisa de um código.</span></h1>'+
-        '<p>O <b style="color:#fff">Código VGV</b> é a metodologia validada que vai destravar suas campanhas de uma vez por todas. Campanhas que vendem. Responda 2 perguntas e eu te mostro exatamente onde você está rasgando dinheiro.</p>'+
-        '<button class="btn btn-gold" id="btnStart">Iniciar diagnóstico →</button>'+
-        '</div>';
-    },
-    bind: function(){
-      document.getElementById("btnStart").onclick = function(){ goTo(1); };
-    }
-  },
-  {
     type: "question",
     key: "situacao",
-    title: "Hoje, como está sua campanha de anúncios?",
-    sub: "Isso define o seu ponto de partida no método.",
+    hero: true,
+    label: "1ª tela — como está sua campanha",
+    title: "Pra começar: como está sua campanha hoje?",
     options: [
       {v:"nunca", label:"Nunca rodei uma campanha de verdade"},
       {v:"tentou", label:"Já invisto, mas não vejo volta real"},
@@ -278,28 +294,29 @@ function sanitize(s){ return String(s||"").replace(/[&<>"]/g,function(c){return{
 function render(){
   var s = steps[idx];
   var app = document.getElementById("app");
-  var progPct = Math.min(100, Math.round((idx/TOTAL_INTERACTIVE)*100));
-  document.getElementById("prog").style.width = progPct + "%";
   trackStep(s);
 
-  if(s.type === "intro"){
-    app.innerHTML = s.render();
-    s.bind();
-    return;
-  }
-
   if(s.type === "question"){
-    var html = '<div class="stepwrap">';
-    if(idx>1) html += '<button class="back" id="btnBack">← voltar</button>';
-    html += '<div class="eyebrow"><span class="n">Etapa '+idx+' de '+TOTAL_INTERACTIVE+'</span></div>'+
-      '<div><h2 class="q-title">'+s.title+'</h2><p class="q-sub">'+s.sub+'</p></div>'+
-      '<div class="opts">';
+    var html = '<div class="stepwrap'+(s.hero?' hero-q':'')+'">';
+    html += progressHTML();
+    if(idx>0) html += '<button class="back" id="btnBack">← voltar</button>';
+    if(s.hero){
+      html += '<div><h1>Onde sua campanha está <span class="gold">rasgando dinheiro?</span></h1>'+
+        '<p class="lead">Responda 4 toques rápidos e veja o diagnóstico do <b>método que gerou 9 vendas em 30 dias</b>.</p></div>'+
+        '<div><p class="q-kicker">Pergunta 1</p><h2 class="q-title">'+s.title+'</h2></div>';
+    } else {
+      html += '<div><h2 class="q-title">'+s.title+'</h2><p class="q-sub">'+s.sub+'</p></div>';
+    }
+    html += '<div class="opts">';
     s.options.forEach(function(o,i){
       html += '<button class="opt" data-v="'+o.v+'"><span class="ic">'+String.fromCharCode(65+i)+'</span><span>'+o.label+'</span></button>';
     });
-    html += '</div></div>';
+    html += '</div>';
+    if(s.hero) html += '<div class="safe"><span><span class="check">✓</span> Sem cadastro</span><span><span class="check">✓</span> Sem e-mail</span><span><span class="check">✓</span> Resultado na hora</span></div>';
+    html += '</div>';
     app.innerHTML = html;
-    if(idx>1) document.getElementById("btnBack").onclick = function(){ goTo(idx-1); };
+    animateProgress();
+    if(idx>0) document.getElementById("btnBack").onclick = function(){ goTo(idx-1); };
     app.querySelectorAll(".opt").forEach(function(btn){
       btn.onclick = function(){
         answers[s.key] = btn.getAttribute("data-v");
@@ -311,21 +328,23 @@ function render(){
 
   if(s.type === "statement"){
     var html = '<div class="stepwrap">';
+    html += progressHTML();
     html += '<button class="back" id="btnBack">← voltar</button>';
-    html += '<div class="eyebrow"><span class="n">Etapa '+idx+' de '+TOTAL_INTERACTIVE+'</span></div>'+
-      '<div><p class="q-sub" style="margin-bottom:8px">'+s.eyebrow+'</p><h2 class="q-title">'+s.title+'</h2><p class="q-sub" style="margin-top:12px">'+s.body+'</p></div>'+
+    html += '<div><p class="q-sub" style="margin-bottom:8px">'+s.eyebrow+'</p><h2 class="q-title">'+s.title+'</h2><p class="q-sub" style="margin-top:12px">'+s.body+'</p></div>'+
       '<button class="btn btn-gold" id="btnNext">'+s.cta+'</button>'+
       '</div>';
     app.innerHTML = html;
+    animateProgress();
     document.getElementById("btnBack").onclick = function(){ goTo(idx-1); };
     document.getElementById("btnNext").onclick = function(){ goTo(idx+1); };
     return;
   }
 
   if(s.type === "loading"){
-    app.innerHTML = '<div class="loading"><div class="spinner"></div>'+
+    app.innerHTML = '<div class="stepwrap">'+progressHTML()+'<div class="loading"><div class="spinner"></div>'+
       '<p class="line">Cruzando suas respostas com o método validado...</p>'+
-      '<p>Preparando seu diagnóstico personalizado</p></div>';
+      '<p>Preparando seu diagnóstico personalizado</p></div></div>';
+    animateProgress();
     setTimeout(function(){ goTo(idx+1); }, 1600);
     return;
   }
