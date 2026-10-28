@@ -57,8 +57,9 @@ body{margin:0;background:var(--bg);color:var(--fg);font-family:"Inter",system-ui
 .sess{background:var(--surface);border:1px solid var(--line);border-radius:var(--rs);padding:12px 14px;cursor:pointer}
 .sess-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
 .sess-id{font-size:11px;color:var(--muted);font-family:monospace}
-.sess-right{display:flex;align-items:center;gap:10px;flex:none}
-.sess-step{font-size:12px;color:var(--gold-l);font-weight:600}
+.sess-right{display:flex;align-items:center;justify-content:flex-end;gap:10px;flex:1 1 auto;min-width:0}
+.sess-step{font-size:12px;color:var(--gold-l);font-weight:600;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sess-price,.sess-count,.sess-caret,.sess-id{flex:none}
 .sess-count{font-size:11px;color:var(--muted)}
 .sess-caret{color:var(--gold);font-size:11px;transition:.15s}
 .sess.open .sess-caret{transform:rotate(90deg)}
@@ -74,6 +75,15 @@ body{margin:0;background:var(--bg);color:var(--fg);font-family:"Inter",system-ui
   padding:7px 14px;border-radius:999px;cursor:pointer;font-family:inherit}
 .ver button.on{color:#140E03;background:var(--gold);border-color:var(--gold)}
 .ver .note{font-size:11.5px;color:var(--muted)}
+.ab{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin-bottom:8px}
+.ab-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--rs);padding:16px}
+.ab-price{font-size:22px;font-weight:800;color:var(--gold-l)}
+.ab-row{display:flex;justify-content:space-between;font-size:13px;padding:5px 0;border-bottom:1px dashed var(--line)}
+.ab-row:last-child{border-bottom:none}
+.ab-row span:first-child{color:var(--muted)}
+.ab-row b{color:var(--fg)}
+.ab-note{font-size:11.5px;color:var(--muted);margin:0 0 26px}
+.sess-price{font-size:11px;font-weight:700;color:#140E03;background:var(--gold);border-radius:999px;padding:2px 8px}
 </style>
 </head>
 <body>
@@ -93,6 +103,12 @@ body{margin:0;background:var(--bg);color:var(--fg);font-family:"Inter",system-ui
   </div>
 
   <div class="cards" id="cards"></div>
+
+  <div id="abWrap" style="display:none">
+    <div class="section-title">Teste de preço</div>
+    <div class="ab" id="ab"></div>
+    <p class="ab-note">Visitantes divididos 50/50 no quiz. Vendas confirmadas: conferir no Kiwify por link de checkout.</p>
+  </div>
 
   <div class="section-title">Etapas do funil</div>
   <div class="funnel" id="funnel"><div class="empty">Carregando...</div></div>
@@ -139,6 +155,18 @@ function render(data){
     '<div class="card"><div class="n">'+(data.total_eventos||0)+'</div><div class="l">Eventos registrados</div></div>'+
     '<div class="card"><div class="n">'+convRate+'%</div><div class="l">Chegou até a última etapa</div></div>';
 
+  var tp = data.teste_preco || [];
+  document.getElementById("abWrap").style.display = tp.length ? "" : "none";
+  document.getElementById("ab").innerHTML = tp.map(function(p){
+    return '<div class="ab-card"><div class="ab-price">R$ '+esc(p.preco)+'</div>'+
+      '<div class="ab-row"><span>Sessões</span><b>'+p.sessoes+'</b></div>'+
+      '<div class="ab-row"><span>Viram o preço (resultado)</span><b>'+p.resultado+'</b></div>'+
+      '<div class="ab-row"><span>Clicaram comprar</span><b>'+p.checkout+'</b></div>'+
+      '<div class="ab-row"><span>Clique ÷ viu o preço</span><b>'+p.pct_checkout_resultado+'%</b></div>'+
+      '<div class="ab-row"><span>Clique ÷ sessões</span><b>'+p.pct_checkout_sessoes+'%</b></div>'+
+    '</div>';
+  }).join("");
+
   var f = document.getElementById("funnel");
   if(!steps.length){
     f.innerHTML = '<div class="empty">Sem dados nesse período ainda.</div>';
@@ -166,7 +194,8 @@ function render(data){
     sess.innerHTML = '<div class="empty">Nenhuma sessão registrada ainda.</div>';
   }else{
     sess.innerHTML = list.map(function(s,i){
-      var qas = Object.keys(s.respostas||{});
+      var qas = Object.keys(s.respostas||{}).filter(function(k){ return k !== "preco"; });
+      var preco = (s.respostas||{}).preco;
       var answersHtml = qas.length
         ? qas.map(function(q){ return '<div class="ans-row"><span class="ans-q">'+esc(q)+'</span><span class="ans-a">'+esc(s.respostas[q])+'</span></div>'; }).join("")
         : '<div class="ans-empty">Nenhuma pergunta respondida ainda (abandonou antes).</div>';
@@ -175,6 +204,7 @@ function render(data){
         '<div class="sess-head">'+
           '<span class="sess-id">'+esc(s.session_id)+'</span>'+
           '<div class="sess-right">'+
+            (preco ? '<span class="sess-price">R$ '+esc(preco)+'</span>' : '')+
             '<span class="sess-step">'+esc(s.step_label)+'</span>'+
             '<span class="sess-count">'+qas.length+' resp.</span>'+
             '<span class="sess-caret">▸</span>'+

@@ -187,9 +187,27 @@ footer.disc{color:#6B6F7A;font-size:11px;text-align:center;padding:30px 0 10px;l
 <footer class="disc wrap">Não há promessa de resultado. Os resultados variam conforme produto, praça, verba e execução. Este produto não é afiliado ao Meta/Facebook.</footer>
 
 <script>
-var CHECKOUT_URL = "https://pay.kiwify.com.br/2a2yZPt";
+// Teste de preço: cada visitante cai em uma variante (50/50) e mantém ela nas próximas visitas.
+// Forçar pra conferir: ?p=a (R$ 9,90) ou ?p=b (R$ 19,00)
+var PRICES = {
+  a: { label: "9,90",  url: "https://pay.kiwify.com.br/2a2yZPt" },
+  b: { label: "19,00", url: "https://pay.kiwify.com.br/i6FNiE2" }
+};
+function priceVariant(){
+  var forced = (location.search.match(/[?&]p=([ab])\b/) || [])[1];
+  if(forced) return forced;
+  var k = "vgv_preco_var", v = null;
+  try{ v = localStorage.getItem(k); }catch(e){}
+  if(!PRICES[v]){
+    v = Math.random() < 0.5 ? "a" : "b";
+    try{ localStorage.setItem(k, v); }catch(e){}
+  }
+  return v;
+}
+var PRICE = PRICES[priceVariant()];
+var CHECKOUT_URL = PRICE.url;
 var STEP_WEBHOOK_URL = "https://n8n.manuai.com.br/webhook/funil-vgv-step";
-var answers = {};
+var answers = { preco: PRICE.label };
 var idx = 0;
 var TOTAL_INTERACTIVE = 4; // 2 perguntas + 2 etapas de método (pra barra de progresso)
 // progresso já começa preenchido (efeito de progresso dado) e acelera no fim
@@ -369,7 +387,7 @@ function render(){
         '</div>'+
         '<div class="reaffirm"><p>Vou te pegar pela mão com essa metodologia — e você vai subir campanhas que vendem.</p></div>'+
         '<ul class="r-list">'+
-          '<li><span class="c">✓</span> <b style="color:#fff">A campanha validada, tela a tela</b> — do botão Criar ao publicar</li>'+
+          '<li><span class="c">✓</span> <span><b style="color:#fff">A campanha validada, tela a tela</b> — do botão Criar ao publicar</span></li>'+
           '<li><span class="c">✓</span> '+diag.highlight+'</li>'+
           '<li><span class="c">✓</span> Segmentação, modelos de copy e roteiro de atendimento (complementos prontos)</li>'+
           '<li><span class="c">✓</span> Acesso imediato e vitalício, direto no seu e-mail</li>'+
@@ -378,7 +396,7 @@ function render(){
           '<div class="tag"><span class="seal">Oferta de lançamento</span></div>'+
           '<div style="font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold-l);font-weight:800;margin-top:6px">Código VGV — Ebook completo</div>'+
           '<div class="price-old">De R$ 450</div>'+
-          '<div class="price-now"><span class="cur">R$</span>9,90</div>'+
+          '<div class="price-now"><span class="cur">R$</span>'+PRICE.label+'</div>'+
           '<div class="price-sub">pagamento único · acesso imediato e vitalício</div>'+
           '<button class="btn btn-gold" id="btnCheckout">👉 Compre agora e aplique no mesmo dia →</button>'+
           '<div class="price-note">Pagamento seguro · Kiwify. Não há promessa de resultado: os resultados variam conforme produto, praça, execução e verba.</div>'+
