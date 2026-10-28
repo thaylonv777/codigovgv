@@ -188,13 +188,14 @@ footer.disc{color:#6B6F7A;font-size:11px;text-align:center;padding:30px 0 10px;l
 
 <script>
 // Teste de preço: cada visitante cai em uma variante (50/50) e mantém ela nas próximas visitas.
-// Forçar pra conferir: ?p=a (R$ 9,90) ou ?p=b (R$ 19,00)
+// Link fixo de R$ 19,00: /quiz-19 (rewrite no vercel.json). Forçar pra conferir: ?p=a (R$ 9,90) ou ?p=b (R$ 19,00)
 var PRICES = {
   a: { label: "9,90",  url: "https://pay.kiwify.com.br/2a2yZPt" },
   b: { label: "19,00", url: "https://pay.kiwify.com.br/i6FNiE2" }
 };
 function priceVariant(){
   var forced = (location.search.match(/[?&]p=([ab])\b/) || [])[1];
+  if(!forced && /^\/quiz-19\/?$/.test(location.pathname)) forced = "b";
   if(forced) return forced;
   var k = "vgv_preco_var", v = null;
   try{ v = localStorage.getItem(k); }catch(e){}
