@@ -137,7 +137,8 @@ main{padding:28px 0 60px;min-height:100vh;display:flex;flex-direction:column;jus
 .back{color:var(--muted);font-size:13.5px;font-weight:600;display:inline-flex;align-items:center;gap:6px;cursor:pointer;align-self:flex-start;background:none;border:none;font-family:inherit;padding:6px 0}
 .back:hover{color:var(--gold-l)}
 
-.namefield{display:flex;flex-direction:column;gap:4px;margin-top:4px}
+.namefield{display:flex;flex-direction:column;gap:4px;margin-top:6px;padding-top:18px;border-top:1px solid var(--line)}
+.name-q{font-size:clamp(21px,5.5vw,25px);color:#fff;margin-bottom:12px}
 .namefield input{width:100%;padding:17px 18px;border-radius:12px;border:1px solid var(--line);
   background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,.012));color:#fff;font-size:16px;
   font-family:inherit;font-weight:600}
@@ -400,7 +401,7 @@ function render(){
         '</div>'+
         '<p class="pq-who">Corretor de imóveis · case real com o método</p>'+
       '</div></div>'+
-      '<div class="namefield"><input id="nomeInput" type="text" placeholder="Seu primeiro nome" autocomplete="given-name" maxlength="40" aria-label="Seu primeiro nome">'+
+      '<div class="namefield"><h2 class="name-q">Como posso te chamar?</h2><input id="nomeInput" type="text" placeholder="Seu primeiro nome" autocomplete="given-name" maxlength="40" aria-label="Seu primeiro nome">'+
       '<p class="field-err" id="nomeErr"></p>'+
       '<button class="btn btn-gold" id="btnNome">Começar meu diagnóstico →</button></div>';
     html += '<div class="safe"><span><span class="check">✓</span> Sem e-mail</span><span><span class="check">✓</span> Leva 30 segundos</span><span><span class="check">✓</span> Resultado na hora</span></div>';
