@@ -373,7 +373,7 @@ var steps = [
 // SEM ensinar a mecânica nem revelar a configuração — isso é o conteúdo do método.
 var DIAG = {
   magra: {
-    afirma: "Sua campanha está subalimentada. A Meta não recebe material suficiente pra encontrar quem realmente compra de você — e cobra caro por isso.",
+    afirma: "Com tão pouco no ar, a Meta entrega pra quem for mais barato alcançar — não pra quem tem mais chance de comprar. Você paga por atenção, não por intenção.",
     highlight: "Como dar à Meta o volume que ela precisa pra achar seu comprador"
   },
   espalhada: {
@@ -385,28 +385,33 @@ var DIAG = {
     highlight: "Como garantir que cada criativo bom seja realmente entregue"
   },
   nao_sei: {
-    afirma: "Sem uma configuração definida, a verba some sem deixar rastro: no fim do mês você sabe quanto gastou, mas não sabe o que funcionou.",
-    highlight: "A configuração completa da primeira campanha, do zero até o publicar"
+    afirma: "Sem um padrão definido, a verba some sem deixar rastro: no fim do mês você sabe quanto gastou, mas não sabe o que funcionou.",
+    highlight: "A montagem completa da primeira campanha, do zero até o publicar"
   }
 };
 
 // Manchete do diagnóstico: o dinheiro exposto em 6 meses, calculado da verba declarada.
+// A "pergunta" é o soco — incomoda sem acusar. A "linha" muda em cada faixa.
 var VERBA_6M = {
   zero: {
     manchete: "Você ainda não queimou um real — e é agora que isso se decide",
-    linha: "Quem começa sem a configuração certa passa os primeiros meses pagando caro pra aprender o que já está documentado."
+    pergunta: "A pergunta é se o primeiro real vai virar venda ou mensalidade pra Meta.",
+    linha: "Quem começa no chute passa os primeiros meses pagando caro pra aprender o que já está documentado."
   },
   ate1k: {
     manchete: "Em 6 meses, até R$ 6.000 vão passar pela sua campanha",
-    linha: "Com a configuração errada, boa parte disso vira aprendizado caro em vez de venda."
+    pergunta: "A pergunta é quanto disso vira venda.",
+    linha: "Nessa faixa não sobra margem pra errar: o que escapa num mês não volta no seguinte."
   },
   "1a5k": {
     manchete: "Em 6 meses, de R$ 6.000 a R$ 30.000 vão passar pela sua campanha",
-    linha: "Com a configuração errada, boa parte disso vira aprendizado caro em vez de venda."
+    pergunta: "A pergunta é quanto disso vira venda — e quanto vira taxa de aprendizado.",
+    linha: "É verba suficiente pra escalar de verdade, ou pra sangrar sem perceber: nesse volume o vazamento se esconde no meio do movimento."
   },
   "5k+": {
     manchete: "Em 6 meses, mais de R$ 30.000 vão passar pela sua campanha",
-    linha: "Nessa escala, configuração errada não é detalhe — é prejuízo acumulando todo mês."
+    pergunta: "A pergunta não é quanto você investe. É quanto volta.",
+    linha: "Nessa escala, cada ponto de eficiência são milhares de reais por mês — ganhos ou perdidos."
   }
 };
 
@@ -528,9 +533,10 @@ function render(){
         '</div>'+
         '<div class="r-diag">'+
           '<p class="tag">O que seu diagnóstico mostra</p>'+
-          '<p>'+diag.afirma+'</p>'+
+          '<p style="font-size:16.5px;color:#fff;font-weight:600">'+v6.pergunta+'</p>'+
+          '<p style="margin-top:12px">'+diag.afirma+'</p>'+
           '<p style="margin-top:12px">'+v6.linha+'</p>'+
-          '<p style="margin-top:14px;padding-top:14px;border-top:1px solid var(--line)"><b>O motivo tem nome: configuração.</b> E tem conserto — é exatamente isso que o Código VGV entrega.</p>'+
+          '<p style="margin-top:14px;padding-top:14px;border-top:1px solid var(--line)">Isso não é sorte, nem produto, nem nicho. É <b>configuração</b> — e é exatamente isso que o Código VGV entrega.</p>'+
         '</div>'+
         '<div class="video-wrap"><div class="video-frame"><iframe src="https://www.youtube.com/embed/2ewkU2yamJ4?rel=0&modestbranding=1" title="Depoimento — resultado real com o método" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>'+
           '<p class="video-quote">"Foi a estrutura de campanha certa, para o comprador certo, na hora certa de comprar."</p>'+
