@@ -271,7 +271,7 @@ function checkoutUrl(){
   }catch(e){ return CHECKOUT_URL; }
 }
 var idx = 0;
-var TOTAL_INTERACTIVE = 5; // nome + 2 perguntas + 2 etapas de método (pra barra de progresso)
+var TOTAL_INTERACTIVE = 5; // nome + 3 perguntas + 1 etapa de método (pra barra de progresso)
 // progresso já começa preenchido (efeito de progresso dado) e acelera no fim
 var PROG = [10, 28, 46, 64, 82, 100];
 var PROG_HINT = ["leva 30 segundos", "faltam 4", "faltam 3", "faltam 2", "última etapa", "gerando diagnóstico"];
@@ -320,63 +320,97 @@ var steps = [
     type: "question",
     key: "situacao",
     hero: true,
-    label: "2ª tela — como está sua campanha",
-    title: function(){ return nome() ? (nome()+", pra começar: como está sua campanha hoje?") : "Pra começar: como está sua campanha hoje?"; },
+    kicker: "Pergunta 1 de 3",
+    label: "2ª tela — situação",
+    title: function(){ return nome() ? (nome()+", como está seu jogo de anúncios hoje?") : "Como está seu jogo de anúncios hoje?"; },
     options: [
-      {v:"nunca", label:"Nunca rodei uma campanha de verdade"},
-      {v:"tentou", label:"Já invisto, mas não vejo volta real"},
-      {v:"escalar", label:"Já vendo, quero vender muito mais"}
+      {v:"nunca", label:"Ainda não anuncio — quero começar certo"},
+      {v:"tentou", label:"Anuncio, mas o resultado é instável"},
+      {v:"escalar", label:"Anuncio e vendo — quero escalar sem quebrar"}
     ]
   },
   {
     type: "question",
-    key: "gargalo",
-    label: "3ª tela — gargalo",
-    title: function(){ return nome() ? (nome()+", o que mais pesa no seu bolso agora?") : "O que mais pesa no seu bolso agora?"; },
-    sub: "Seja direto — é exatamente isso que o método ataca.",
+    key: "verba",
+    kicker: "Pergunta 2 de 3",
+    label: "3ª tela — verba",
+    title: "Quanto entra por mês em anúncio hoje?",
+    sub: "É esse número que define o tamanho do estrago — ou do ganho.",
     options: [
-      {v:"gasto", label:"Gasto verba todo mês e não sei se funciona"},
-      {v:"lead", label:"O lead chega, mas a venda não fecha"},
-      {v:"estrutura", label:"Não sei estruturar a campanha certa"}
+      {v:"zero",  label:"Ainda não invisto"},
+      {v:"ate1k", label:"Até R$ 1.000"},
+      {v:"1a5k",  label:"R$ 1.000 a R$ 5.000"},
+      {v:"5k+",   label:"Acima de R$ 5.000"}
+    ]
+  },
+  {
+    type: "question",
+    key: "estrutura",
+    kicker: "Pergunta 3 de 3",
+    label: "4ª tela — estrutura",
+    title: "Quando você sobe uma campanha, ela fica como?",
+    sub: "Essa é a resposta que mais explica seu resultado hoje.",
+    options: [
+      {v:"magra",       label:"1 campanha, 1 conjunto, 1 ou 2 criativos"},
+      {v:"espalhada",   label:"Várias campanhas separadas, uma por ideia"},
+      {v:"concentrada", label:"1 conjunto só, com vários criativos dentro"},
+      {v:"nao_sei",     label:"Nunca subi / não sei dizer"}
     ]
   },
   {
     type: "statement",
-    label: "4ª tela — método",
+    label: "5ª tela — método",
     eyebrow: "O que o método revela",
     title: "Toda campanha que não vende tem o mesmo defeito.",
     body: function(){ return (nome()?nome()+", n":"N")+"ão é sorte, não é o produto, não é o nicho. É falta de estrutura. O Código VGV é a estrutura exata — 1 campanha, 4 conjuntos, 3 a 4 criativos — que transforma anúncio em comprador qualificado no seu WhatsApp. Testada, validada, repetível."; },
-    cta: "Continuar →"
-  },
-  {
-    type: "statement",
-    label: "5ª tela — custo de esperar",
-    eyebrow: "O custo de esperar",
-    title: "Cada dia sem o código certo é dinheiro saindo do seu bolso.",
-    body: function(){ return (nome()?nome()+", e":"E")+"nquanto você ajusta orçamento no escuro, alguém com a estrutura certa está fechando venda com a mesma verba que você está desperdiçando agora. O método já está pronto. Falta só você aplicar."; },
     cta: "Ver meu diagnóstico →"
   },
   { type: "loading", label: "6ª tela — analisando" },
   { type: "result", label: "7ª tela — resultado" }
 ];
 
+// Diagnóstico pela ESTRUTURA que a pessoa declarou — cada texto explica a mecânica
+// real do que acontece na Meta com aquela montagem, não promessa genérica.
 var DIAG = {
-  estrutura: {
-    tag: "Você está rasgando dinheiro por falta de estrutura",
-    text: "Sem a <b>estrutura validada</b> (1 campanha × 4 conjuntos × 3-4 criativos), sua verba se espalha e some. O Código VGV é o passo a passo completo de como subir essa campanha certa — tela a tela, do zero até o publicar.",
-    highlight: "O passo a passo completo de como subir a campanha validada, tela a tela."
+  magra: {
+    tag: "Sua campanha não dá material pro algoritmo trabalhar",
+    text: "Com <b>1 conjunto e 1 ou 2 criativos</b>, a Meta tem quase nenhuma variação pra testar. Ela consome sua verba aprendendo devagar e muitas vezes nem sai da fase de aprendizado — que é onde o custo por resultado fica mais caro. O Código VGV é a estrutura oposta: 1 campanha, 4 conjuntos, 3 a 4 criativos em cada, volume suficiente pro algoritmo achar seu comprador rápido.",
+    highlight: "Por que são 4 conjuntos e 3-4 criativos — e como montar cada um"
   },
-  lead: {
-    tag: "Você está deixando de faturar o que já poderia",
-    text: "O problema não é o anúncio, é a <b>campanha atraindo o público errado</b>. O Código VGV é o passo a passo de como montar a campanha validada pra atrair quem já está pronto pra comprar — não curioso.",
-    highlight: "O passo a passo de como subir a campanha validada que atrai comprador, não curioso."
+  espalhada: {
+    tag: "Sua verba está fatiada demais pra render",
+    text: "Várias campanhas separadas <b>disputam o mesmo leilão entre si</b> e quebram a verba em pedaços pequenos demais. Cada uma fica presa no aprendizado, nenhuma amadurece — e você paga caro em todas ao mesmo tempo. O Código VGV junta tudo em 1 campanha com 4 conjuntos: a mesma verba, trabalhando junto em vez de uma contra a outra.",
+    highlight: "Como consolidar tudo em 1 campanha sem perder segmentação"
   },
-  gasto: {
-    tag: "Você está rasgando dinheiro sem saber onde",
-    text: "Você está caindo nas <b>pegadinhas da Meta</b> sem perceber. O Código VGV é o passo a passo validado de como estruturar essa campanha sem desperdiçar verba.",
-    highlight: "O passo a passo validado de como estruturar a campanha sem desperdiçar verba."
+  concentrada: {
+    tag: "Você está perto — falta a camada de conjuntos",
+    text: "Jogar <b>vários criativos num conjunto só</b> faz a Meta eleger um favorito cedo e sufocar o resto. Você nunca descobre qual criativo realmente venderia, porque os outros mal foram entregues. O Código VGV distribui em 4 conjuntos com 3 a 4 criativos cada — aí cada ângulo tem chance real de provar o que vale.",
+    highlight: "Como distribuir os criativos entre conjuntos sem canibalizar"
+  },
+  nao_sei: {
+    tag: "Melhor começar certo do que corrigir depois",
+    text: "Quem sobe a primeira campanha no chute queima verba aprendendo o que já está documentado. O Código VGV é a estrutura validada — <b>1 campanha, 4 conjuntos, 3 a 4 criativos</b> — do botão Criar até o publicar, tela a tela, sem pular etapa.",
+    highlight: "O passo a passo da primeira campanha, do zero até o publicar"
   }
 };
+
+// Segunda camada do diagnóstico: coloca a verba declarada em cima da estrutura.
+var VERBA_TXT = {
+  zero:   "Você ainda não investe — então dá pra começar já montando certo, em vez de gastar os primeiros meses aprendendo no caro.",
+  ate1k:  "Você coloca até R$ 1.000 por mês. Nessa faixa cada real pesa: é a verba que menos perdoa erro de montagem, porque não sobra margem pra testar errado.",
+  "1a5k": "Você coloca entre R$ 1.000 e R$ 5.000 por mês. Em um trimestre isso é R$ 3 mil a R$ 15 mil passando por uma estrutura que você não tem certeza se está certa.",
+  "5k+":  "Você coloca acima de R$ 5.000 por mês. Nessa escala, mudar a estrutura move milhares de reais por mês — pra cima ou pra baixo."
+};
+
+// Ancoragem honesta do preço: compara com a verba que a própria pessoa declarou.
+function precoAncora(){
+  var v = answers.verba;
+  if(v === "zero")  return "Pagamento único — menos que um dia de anúncio quando você começar.";
+  if(v === "ate1k") return "Menos do que um único dia da sua verba atual.";
+  if(v === "1a5k")  return "Menos do que um único dia da sua verba atual.";
+  if(v === "5k+")   return "Menos de 15% de um único dia da sua verba.";
+  return "";
+}
 
 function sanitize(s){ return String(s||"").replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]}) }
 
@@ -426,10 +460,11 @@ function render(){
     var html = '<div class="stepwrap'+(s.hero?' hero-q':'')+'">';
     html += progressHTML();
     if(idx>0) html += '<button class="back" id="btnBack">← voltar</button>';
+    var kickerHtml = s.kicker ? '<p class="q-kicker">'+s.kicker+'</p>' : '';
     if(s.hero){
-      html += '<div><p class="q-kicker">Pergunta 1</p><h2 class="q-title">'+titleTxt+'</h2></div>';
+      html += '<div>'+kickerHtml+'<h2 class="q-title">'+titleTxt+'</h2></div>';
     } else {
-      html += '<div><h2 class="q-title">'+titleTxt+'</h2><p class="q-sub">'+s.sub+'</p></div>';
+      html += '<div>'+kickerHtml+'<h2 class="q-title">'+titleTxt+'</h2><p class="q-sub">'+s.sub+'</p></div>';
     }
     html += '<div class="opts">';
     s.options.forEach(function(o,i){
@@ -474,14 +509,19 @@ function render(){
   }
 
   if(s.type === "result"){
-    var diag = DIAG[answers.gargalo] || DIAG.estrutura;
+    var diag = DIAG[answers.estrutura] || DIAG.nao_sei;
+    var verbaTxt = VERBA_TXT[answers.verba] || "";
+    var ancora = precoAncora();
     app.innerHTML =
       '<div class="result show">'+
         '<div class="r-top">'+
           '<span class="seal">✦ '+(nome()?nome()+', seu':'Seu')+' diagnóstico está pronto</span>'+
           '<h1>'+diag.tag+'</h1>'+
         '</div>'+
-        '<div class="r-diag"><p>'+diag.text+'</p></div>'+
+        '<div class="r-diag">'+
+          '<p>'+diag.text+'</p>'+
+          (verbaTxt ? '<p style="margin-top:14px;padding-top:14px;border-top:1px solid var(--line)">'+verbaTxt+'</p>' : '')+
+        '</div>'+
         '<div class="video-wrap"><div class="video-frame"><iframe src="https://www.youtube.com/embed/2ewkU2yamJ4?rel=0&modestbranding=1" title="Depoimento — resultado real com o método" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>'+
           '<p class="video-quote">"Foi a estrutura de campanha certa, para o comprador certo, na hora certa de comprar."</p>'+
           '<p class="video-name">Case real de campanha gerida pela Método Átrio.</p>'+
@@ -504,6 +544,7 @@ function render(){
           '<div class="price-old">De R$ 450</div>'+
           '<div class="price-now"><span class="cur">R$</span>'+PRICE.label+'</div>'+
           '<div class="price-sub">pagamento único · acesso imediato e vitalício</div>'+
+          (ancora ? '<p style="font-size:13px;color:var(--gold-l);font-weight:600;margin:-12px 0 18px;line-height:1.4">'+ancora+'</p>' : '')+
           '<button class="btn btn-gold" id="btnCheckout">👉 Compre agora e aplique no mesmo dia →</button>'+
           '<div class="price-note">Pagamento seguro · Kiwify. Não há promessa de resultado: os resultados variam conforme produto, praça, execução e verba.</div>'+
         '</div>'+
