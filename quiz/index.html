@@ -137,6 +137,15 @@ main{padding:28px 0 60px;min-height:100vh;display:flex;flex-direction:column;jus
 .back{color:var(--muted);font-size:13.5px;font-weight:600;display:inline-flex;align-items:center;gap:6px;cursor:pointer;align-self:flex-start;background:none;border:none;font-family:inherit;padding:6px 0}
 .back:hover{color:var(--gold-l)}
 
+.namefield{display:flex;flex-direction:column;gap:4px;margin-top:4px}
+.namefield input{width:100%;padding:17px 18px;border-radius:12px;border:1px solid var(--line);
+  background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,.012));color:#fff;font-size:16px;
+  font-family:inherit;font-weight:600}
+.namefield input::placeholder{color:var(--muted);font-weight:500}
+.namefield input:focus{outline:none;border-color:rgba(240,217,160,.55);box-shadow:0 0 0 3px rgba(201,161,78,.16)}
+.field-err{color:var(--bad);font-size:12.5px;min-height:16px;margin:2px 2px 4px}
+.namefield .btn{margin-top:4px}
+
 /* loading step */
 .loading{text-align:center;display:flex;flex-direction:column;align-items:center;gap:20px;padding:30px 0}
 .spinner{width:46px;height:46px;border-radius:50%;border:3px solid rgba(240,217,160,.18);border-top-color:var(--gold-l);animation:spin 1s linear infinite}
@@ -261,10 +270,11 @@ function checkoutUrl(){
   }catch(e){ return CHECKOUT_URL; }
 }
 var idx = 0;
-var TOTAL_INTERACTIVE = 4; // 2 perguntas + 2 etapas de método (pra barra de progresso)
+var TOTAL_INTERACTIVE = 5; // nome + 2 perguntas + 2 etapas de método (pra barra de progresso)
 // progresso já começa preenchido (efeito de progresso dado) e acelera no fim
-var PROG = [15, 40, 65, 85, 100];
-var PROG_HINT = ["leva 30 segundos", "faltam 3", "faltam 2", "última etapa", "gerando diagnóstico"];
+var PROG = [10, 28, 46, 64, 82, 100];
+var PROG_HINT = ["leva 30 segundos", "faltam 4", "faltam 3", "faltam 2", "última etapa", "gerando diagnóstico"];
+function nome(){ return answers.nome ? answers.nome.trim().split(/\s+/)[0] : ""; }
 var lastPct = 0;
 function progressHTML(){
   var pct = PROG[Math.min(idx, PROG.length-1)];
@@ -301,11 +311,16 @@ function trackStep(s){
 
 var steps = [
   {
+    type: "nome",
+    key: "nome",
+    label: "1ª tela — nome"
+  },
+  {
     type: "question",
     key: "situacao",
     hero: true,
-    label: "1ª tela — como está sua campanha",
-    title: "Pra começar: como está sua campanha hoje?",
+    label: "2ª tela — como está sua campanha",
+    title: function(){ return nome() ? (nome()+", pra começar: como está sua campanha hoje?") : "Pra começar: como está sua campanha hoje?"; },
     options: [
       {v:"nunca", label:"Nunca rodei uma campanha de verdade"},
       {v:"tentou", label:"Já invisto, mas não vejo volta real"},
@@ -315,7 +330,8 @@ var steps = [
   {
     type: "question",
     key: "gargalo",
-    title: "O que mais pesa no seu bolso agora?",
+    label: "3ª tela — gargalo",
+    title: function(){ return nome() ? (nome()+", o que mais pesa no seu bolso agora?") : "O que mais pesa no seu bolso agora?"; },
     sub: "Seja direto — é exatamente isso que o método ataca.",
     options: [
       {v:"gasto", label:"Gasto verba todo mês e não sei se funciona"},
@@ -325,20 +341,22 @@ var steps = [
   },
   {
     type: "statement",
+    label: "4ª tela — método",
     eyebrow: "O que o método revela",
     title: "Toda campanha que não vende tem o mesmo defeito.",
-    body: "Não é sorte, não é o produto, não é o nicho. É falta de estrutura. O Código VGV é a estrutura exata — 1 campanha, 4 conjuntos, 3 a 4 criativos — que transforma anúncio em comprador qualificado no seu WhatsApp. Testada, validada, repetível.",
+    body: function(){ return (nome()?nome()+", n":"N")+"ão é sorte, não é o produto, não é o nicho. É falta de estrutura. O Código VGV é a estrutura exata — 1 campanha, 4 conjuntos, 3 a 4 criativos — que transforma anúncio em comprador qualificado no seu WhatsApp. Testada, validada, repetível."; },
     cta: "Continuar →"
   },
   {
     type: "statement",
+    label: "5ª tela — custo de esperar",
     eyebrow: "O custo de esperar",
     title: "Cada dia sem o código certo é dinheiro saindo do seu bolso.",
-    body: "Enquanto você ajusta orçamento no escuro, alguém com a estrutura certa está fechando venda com a mesma verba que você está desperdiçando agora. O método já está pronto. Falta só você aplicar.",
+    body: function(){ return (nome()?nome()+", e":"E")+"nquanto você ajusta orçamento no escuro, alguém com a estrutura certa está fechando venda com a mesma verba que você está desperdiçando agora. O método já está pronto. Falta só você aplicar."; },
     cta: "Ver meu diagnóstico →"
   },
-  { type: "loading" },
-  { type: "result" }
+  { type: "loading", label: "6ª tela — analisando" },
+  { type: "result", label: "7ª tela — resultado" }
 ];
 
 var DIAG = {
@@ -366,34 +384,57 @@ function render(){
   var app = document.getElementById("app");
   trackStep(s);
 
+  if(s.type === "nome"){
+    var html = '<div class="stepwrap hero-q">';
+    html += progressHTML();
+    html += '<div><div class="author"><img src="/quiz/thaylon.webp" alt="Thaylon Vieira" width="58" height="58">'+
+      '<div><b>Thaylon Vieira</b><span>Criador do Código VGV</span></div></div>'+
+      '<h1>Vou te pegar pela mão e ensinar <span class="gold">o método da campanha que vende</span></h1>'+
+      '<p class="lead">Em <b>30 segundos</b> eu te mostro onde sua campanha está perdendo dinheiro. Pra personalizar seu diagnóstico, só preciso saber como te chamar.</p>'+
+      '<div class="pq"><span class="pq-mark">“</span>'+
+        '<p class="pq-text">Foi a estrutura de campanha certa, para o comprador certo, na hora certa de comprar.</p>'+
+        '<div class="pq-stats">'+
+          '<div><b>9 vendas</b><span>em 1 mês</span></div>'+
+          '<div><b>R$2 mi</b><span>vendidos</span></div>'+
+          '<div><b>12,41x</b><span>de retorno</span></div>'+
+        '</div>'+
+        '<p class="pq-who">Corretor de imóveis · case real com o método</p>'+
+      '</div></div>'+
+      '<div class="namefield"><input id="nomeInput" type="text" placeholder="Seu primeiro nome" autocomplete="given-name" maxlength="40" aria-label="Seu primeiro nome">'+
+      '<p class="field-err" id="nomeErr"></p>'+
+      '<button class="btn btn-gold" id="btnNome">Começar meu diagnóstico →</button></div>';
+    html += '<div class="safe"><span><span class="check">✓</span> Sem e-mail</span><span><span class="check">✓</span> Leva 30 segundos</span><span><span class="check">✓</span> Resultado na hora</span></div>';
+    html += '</div>';
+    app.innerHTML = html;
+    animateProgress();
+    var inp = document.getElementById("nomeInput");
+    function submitNome(){
+      var v = inp.value.trim();
+      if(v.length < 2){ document.getElementById("nomeErr").textContent = "Digite seu nome pra continuar."; inp.focus(); return; }
+      answers.nome = v;
+      goTo(idx+1);
+    }
+    document.getElementById("btnNome").onclick = submitNome;
+    inp.addEventListener("keydown", function(e){ if(e.key==="Enter"){ e.preventDefault(); submitNome(); } });
+    setTimeout(function(){ inp.focus(); }, 300);
+    return;
+  }
+
   if(s.type === "question"){
+    var titleTxt = typeof s.title === "function" ? s.title() : s.title;
     var html = '<div class="stepwrap'+(s.hero?' hero-q':'')+'">';
     html += progressHTML();
     if(idx>0) html += '<button class="back" id="btnBack">← voltar</button>';
     if(s.hero){
-      html += '<div><div class="author"><img src="/quiz/thaylon.webp" alt="Thaylon Vieira" width="58" height="58">'+
-        '<div><b>Thaylon Vieira</b><span>Criador do Código VGV</span></div></div>'+
-        '<h1>Vou te pegar pela mão e ensinar <span class="gold">o método da campanha que vende</span></h1>'+
-        '<p class="lead">Responda 4 toques rápidos e veja seu diagnóstico.</p>'+
-        '<div class="pq"><span class="pq-mark">“</span>'+
-          '<p class="pq-text">Foi a estrutura de campanha certa, para o comprador certo, na hora certa de comprar.</p>'+
-          '<div class="pq-stats">'+
-            '<div><b>9 vendas</b><span>em 1 mês</span></div>'+
-            '<div><b>R$2 mi</b><span>vendidos</span></div>'+
-            '<div><b>12,41x</b><span>de retorno</span></div>'+
-          '</div>'+
-          '<p class="pq-who">Corretor de imóveis · case real com o método</p>'+
-        '</div></div>'+
-        '<div><p class="q-kicker">Pergunta 1</p><h2 class="q-title">'+s.title+'</h2></div>';
+      html += '<div><p class="q-kicker">Pergunta 1</p><h2 class="q-title">'+titleTxt+'</h2></div>';
     } else {
-      html += '<div><h2 class="q-title">'+s.title+'</h2><p class="q-sub">'+s.sub+'</p></div>';
+      html += '<div><h2 class="q-title">'+titleTxt+'</h2><p class="q-sub">'+s.sub+'</p></div>';
     }
     html += '<div class="opts">';
     s.options.forEach(function(o,i){
       html += '<button class="opt" data-v="'+o.v+'"><span class="ic">'+String.fromCharCode(65+i)+'</span><span>'+o.label+'</span></button>';
     });
     html += '</div>';
-    if(s.hero) html += '<div class="safe"><span><span class="check">✓</span> Sem cadastro</span><span><span class="check">✓</span> Sem e-mail</span><span><span class="check">✓</span> Resultado na hora</span></div>';
     html += '</div>';
     app.innerHTML = html;
     animateProgress();
@@ -408,10 +449,11 @@ function render(){
   }
 
   if(s.type === "statement"){
+    var bodyTxt = typeof s.body === "function" ? s.body() : s.body;
     var html = '<div class="stepwrap">';
     html += progressHTML();
     html += '<button class="back" id="btnBack">← voltar</button>';
-    html += '<div><p class="q-sub" style="margin-bottom:8px">'+s.eyebrow+'</p><h2 class="q-title">'+s.title+'</h2><p class="q-sub" style="margin-top:12px">'+s.body+'</p></div>'+
+    html += '<div><p class="q-sub" style="margin-bottom:8px">'+s.eyebrow+'</p><h2 class="q-title">'+s.title+'</h2><p class="q-sub" style="margin-top:12px">'+bodyTxt+'</p></div>'+
       '<button class="btn btn-gold" id="btnNext">'+s.cta+'</button>'+
       '</div>';
     app.innerHTML = html;
@@ -423,7 +465,7 @@ function render(){
 
   if(s.type === "loading"){
     app.innerHTML = '<div class="stepwrap">'+progressHTML()+'<div class="loading"><div class="spinner"></div>'+
-      '<p class="line">Cruzando suas respostas com o método validado...</p>'+
+      '<p class="line">Cruzando '+(nome()?'as respostas de '+nome():'suas respostas')+' com o método validado...</p>'+
       '<p>Preparando seu diagnóstico personalizado</p></div></div>';
     animateProgress();
     setTimeout(function(){ goTo(idx+1); }, 1600);
@@ -435,7 +477,7 @@ function render(){
     app.innerHTML =
       '<div class="result show">'+
         '<div class="r-top">'+
-          '<span class="seal">✦ Seu diagnóstico está pronto</span>'+
+          '<span class="seal">✦ '+(nome()?nome()+', seu':'Seu')+' diagnóstico está pronto</span>'+
           '<h1>'+diag.tag+'</h1>'+
         '</div>'+
         '<div class="r-diag"><p>'+diag.text+'</p></div>'+
