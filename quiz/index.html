@@ -242,6 +242,13 @@ var answers = { preco: PRICE.label };
 // Origem do tráfego (Meta x TikTok): utm_source, fbclid ou ttclid. Fica salvo na sessão.
 var ORIGEM = (function(){
   var k = "vgv_origem", v = null;
+  var qs = location.search || "";
+  // ?teste=1 marca a sessão como teste e SOBREPÕE o que já estiver salvo na aba
+  // (serve pra navegar no próprio funil sem sujar os números do painel).
+  if(/[?&]teste=1\b/.test(qs)){
+    try{ sessionStorage.setItem(k, "teste"); }catch(e){}
+    return "teste";
+  }
   try{ v = sessionStorage.getItem(k); }catch(e){}
   if(v) return v;
   var q = location.search || "";
