@@ -362,44 +362,52 @@ var steps = [
     label: "5ª tela — método",
     eyebrow: "O que o método revela",
     title: "Toda campanha que não vende tem o mesmo defeito.",
-    body: function(){ return (nome()?nome()+", n":"N")+"ão é sorte, não é o produto, não é o nicho. É falta de estrutura. O Código VGV é a estrutura exata — 1 campanha, 4 conjuntos, 3 a 4 criativos — que transforma anúncio em comprador qualificado no seu WhatsApp. Testada, validada, repetível."; },
+    body: function(){ return (nome()?nome()+", n":"N")+"ão é sorte, não é o produto, não é o nicho. É configuração. Existe uma montagem exata de campanha — testada, validada e repetível — que transforma anúncio em comprador qualificado no seu WhatsApp. E não é teoria: é a mesma configuração do case que você vai ver agora."; },
     cta: "Ver meu diagnóstico →"
   },
   { type: "loading", label: "6ª tela — analisando" },
   { type: "result", label: "7ª tela — resultado" }
 ];
 
-// Diagnóstico pela ESTRUTURA que a pessoa declarou — cada texto explica a mecânica
-// real do que acontece na Meta com aquela montagem, não promessa genérica.
+// Diagnóstico = ISCA, não parecer. Afirma o problema que a estrutura declarada causa,
+// SEM ensinar a mecânica nem revelar a configuração — isso é o conteúdo do método.
 var DIAG = {
   magra: {
-    tag: "Sua campanha não dá material pro algoritmo trabalhar",
-    text: "Com <b>1 conjunto e 1 ou 2 criativos</b>, a Meta tem quase nenhuma variação pra testar. Ela consome sua verba aprendendo devagar e muitas vezes nem sai da fase de aprendizado — que é onde o custo por resultado fica mais caro. O Código VGV é a estrutura oposta: 1 campanha, 4 conjuntos, 3 a 4 criativos em cada, volume suficiente pro algoritmo achar seu comprador rápido.",
-    highlight: "Por que são 4 conjuntos e 3-4 criativos — e como montar cada um"
+    afirma: "Sua campanha está subalimentada. A Meta não recebe material suficiente pra encontrar quem realmente compra de você — e cobra caro por isso.",
+    highlight: "Como dar à Meta o volume que ela precisa pra achar seu comprador"
   },
   espalhada: {
-    tag: "Sua verba está fatiada demais pra render",
-    text: "Várias campanhas separadas <b>disputam o mesmo leilão entre si</b> e quebram a verba em pedaços pequenos demais. Cada uma fica presa no aprendizado, nenhuma amadurece — e você paga caro em todas ao mesmo tempo. O Código VGV junta tudo em 1 campanha com 4 conjuntos: a mesma verba, trabalhando junto em vez de uma contra a outra.",
-    highlight: "Como consolidar tudo em 1 campanha sem perder segmentação"
+    afirma: "Suas campanhas estão competindo entre si. Na prática, você está pagando pra disputar leilão contra você mesmo.",
+    highlight: "Como parar de competir contra si mesmo no leilão"
   },
   concentrada: {
-    tag: "Você está perto — falta a camada de conjuntos",
-    text: "Jogar <b>vários criativos num conjunto só</b> faz a Meta eleger um favorito cedo e sufocar o resto. Você nunca descobre qual criativo realmente venderia, porque os outros mal foram entregues. O Código VGV distribui em 4 conjuntos com 3 a 4 criativos cada — aí cada ângulo tem chance real de provar o que vale.",
-    highlight: "Como distribuir os criativos entre conjuntos sem canibalizar"
+    afirma: "Você provavelmente já teve um criativo que venderia — e nunca soube. Do jeito que está montado, ele é sufocado antes de ser testado de verdade.",
+    highlight: "Como garantir que cada criativo bom seja realmente entregue"
   },
   nao_sei: {
-    tag: "Melhor começar certo do que corrigir depois",
-    text: "Quem sobe a primeira campanha no chute queima verba aprendendo o que já está documentado. O Código VGV é a estrutura validada — <b>1 campanha, 4 conjuntos, 3 a 4 criativos</b> — do botão Criar até o publicar, tela a tela, sem pular etapa.",
-    highlight: "O passo a passo da primeira campanha, do zero até o publicar"
+    afirma: "Sem uma configuração definida, a verba some sem deixar rastro: no fim do mês você sabe quanto gastou, mas não sabe o que funcionou.",
+    highlight: "A configuração completa da primeira campanha, do zero até o publicar"
   }
 };
 
-// Segunda camada do diagnóstico: coloca a verba declarada em cima da estrutura.
-var VERBA_TXT = {
-  zero:   "Você ainda não investe — então dá pra começar já montando certo, em vez de gastar os primeiros meses aprendendo no caro.",
-  ate1k:  "Você coloca até R$ 1.000 por mês. Nessa faixa cada real pesa: é a verba que menos perdoa erro de montagem, porque não sobra margem pra testar errado.",
-  "1a5k": "Você coloca entre R$ 1.000 e R$ 5.000 por mês. Em um trimestre isso é R$ 3 mil a R$ 15 mil passando por uma estrutura que você não tem certeza se está certa.",
-  "5k+":  "Você coloca acima de R$ 5.000 por mês. Nessa escala, mudar a estrutura move milhares de reais por mês — pra cima ou pra baixo."
+// Manchete do diagnóstico: o dinheiro exposto em 6 meses, calculado da verba declarada.
+var VERBA_6M = {
+  zero: {
+    manchete: "Você ainda não queimou um real — e é agora que isso se decide",
+    linha: "Quem começa sem a configuração certa passa os primeiros meses pagando caro pra aprender o que já está documentado."
+  },
+  ate1k: {
+    manchete: "Em 6 meses, até R$ 6.000 vão passar pela sua campanha",
+    linha: "Com a configuração errada, boa parte disso vira aprendizado caro em vez de venda."
+  },
+  "1a5k": {
+    manchete: "Em 6 meses, de R$ 6.000 a R$ 30.000 vão passar pela sua campanha",
+    linha: "Com a configuração errada, boa parte disso vira aprendizado caro em vez de venda."
+  },
+  "5k+": {
+    manchete: "Em 6 meses, mais de R$ 30.000 vão passar pela sua campanha",
+    linha: "Nessa escala, configuração errada não é detalhe — é prejuízo acumulando todo mês."
+  }
 };
 
 // Ancoragem honesta do preço: compara com a verba que a própria pessoa declarou.
@@ -510,17 +518,19 @@ function render(){
 
   if(s.type === "result"){
     var diag = DIAG[answers.estrutura] || DIAG.nao_sei;
-    var verbaTxt = VERBA_TXT[answers.verba] || "";
+    var v6 = VERBA_6M[answers.verba] || VERBA_6M.zero;
     var ancora = precoAncora();
     app.innerHTML =
       '<div class="result show">'+
         '<div class="r-top">'+
           '<span class="seal">✦ '+(nome()?nome()+', seu':'Seu')+' diagnóstico está pronto</span>'+
-          '<h1>'+diag.tag+'</h1>'+
+          '<h1>'+v6.manchete+'</h1>'+
         '</div>'+
         '<div class="r-diag">'+
-          '<p>'+diag.text+'</p>'+
-          (verbaTxt ? '<p style="margin-top:14px;padding-top:14px;border-top:1px solid var(--line)">'+verbaTxt+'</p>' : '')+
+          '<p class="tag">O que seu diagnóstico mostra</p>'+
+          '<p>'+diag.afirma+'</p>'+
+          '<p style="margin-top:12px">'+v6.linha+'</p>'+
+          '<p style="margin-top:14px;padding-top:14px;border-top:1px solid var(--line)"><b>O motivo tem nome: configuração.</b> E tem conserto — é exatamente isso que o Código VGV entrega.</p>'+
         '</div>'+
         '<div class="video-wrap"><div class="video-frame"><iframe src="https://www.youtube.com/embed/2ewkU2yamJ4?rel=0&modestbranding=1" title="Depoimento — resultado real com o método" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>'+
           '<p class="video-quote">"Foi a estrutura de campanha certa, para o comprador certo, na hora certa de comprar."</p>'+
