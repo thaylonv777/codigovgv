@@ -256,7 +256,9 @@ var ORIGEM = (function(){
   var qs = location.search || "";
   // ?teste=1 marca a sessão como teste e SOBREPÕE o que já estiver salvo na aba
   // (serve pra navegar no próprio funil sem sujar os números do painel).
-  if(/[?&]teste=1\b/.test(qs)){
+  // ?fbclid=fbclid é o link de visualização da Meta (você conferindo o anúncio + robôs de revisão):
+  // clique real sempre traz um fbclid aleatório e longo. Conta como teste também.
+  if(/[?&]teste=1\b/.test(qs) || /[?&]fbclid=fbclid(&|#|$)/.test(qs)){
     try{ sessionStorage.setItem(k, "teste"); }catch(e){}
     return "teste";
   }
