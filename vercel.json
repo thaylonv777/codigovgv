@@ -1,5 +1,6 @@
 {
   "rewrites": [
-    { "source": "/quiz-19", "destination": "/quiz/index.html" }
+    { "source": "/quiz-19", "destination": "/quiz/index.html" },
+    { "source": "/diagnostico", "destination": "/quiz/index.html" }
   ]
 }

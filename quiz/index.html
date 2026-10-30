@@ -216,19 +216,36 @@ footer.disc{color:#6B6F7A;font-size:11px;text-align:center;padding:30px 0 10px;l
 <footer class="disc wrap">Não há promessa de resultado. Os resultados variam conforme produto, praça, verba e execução. Este produto não é afiliado ao Meta/Facebook.</footer>
 
 <script>
-// Preço fixo em R$ 9,90 (igual ao que está no vídeo do anúncio agora).
-// Link fixo de R$ 19,00: /quiz-19 (rewrite no vercel.json). Forçar pra conferir: ?p=a (R$ 9,90) ou ?p=b (R$ 19,00)
+// /quiz         → preço fixo R$ 9,90 (vídeo com preço de 9,90)
+// /quiz-19      → preço fixo R$ 19,00
+// /diagnostico  → giro de preço (vídeo sem preço): cada visitante sorteia 19 / 47 / 67 e mantém nas próximas visitas
+// Rotas no vercel.json. Forçar pra conferir: ?p=a (9,90) ?p=b (19) ?p=c (47) ?p=d (67)
+// parcela: preencher {n:12, v:"4,90"} pra mostrar "12x R$ 4,90" em destaque e o à vista embaixo.
 var PRICES = {
-  a: { label: "9,90",  url: "https://pay.kiwify.com.br/2a2yZPt" },
-  b: { label: "19,00", url: "https://pay.kiwify.com.br/i6FNiE2" }
+  a: { label: "9,90",  n: 9.9, url: "https://pay.kiwify.com.br/2a2yZPt", parcela: null },
+  b: { label: "19,00", n: 19,  url: "https://pay.kiwify.com.br/i6FNiE2", parcela: null },
+  c: { label: "47,00", n: 47,  url: "https://pay.kiwify.com.br/vGFvyHF", parcela: null },
+  d: { label: "67,00", n: 67,  url: "https://pay.kiwify.com.br/EhrsmAD", parcela: null }
 };
+var GIRO = ["b", "c", "d"];
 function priceVariant(){
-  var forced = (location.search.match(/[?&]p=([ab])\b/) || [])[1];
-  if(!forced && /^\/quiz-19\/?$/.test(location.pathname)) forced = "b";
+  var forced = (location.search.match(/[?&]p=([abcd])\b/) || [])[1];
   if(forced) return forced;
+  var path = location.pathname;
+  if(/^\/quiz-19\/?$/.test(path)) return "b";
+  if(/^\/diagnostico\/?$/.test(path)){
+    var k = "vgv_giro_var", v = null;
+    try{ v = localStorage.getItem(k); }catch(e){}
+    if(GIRO.indexOf(v) < 0){
+      v = GIRO[Math.floor(Math.random() * GIRO.length)];
+      try{ localStorage.setItem(k, v); }catch(e){}
+    }
+    return v;
+  }
   return "a";
 }
-var PRICE = PRICES[priceVariant()];
+var PRICE_KEY = priceVariant();
+var PRICE = PRICES[PRICE_KEY];
 var CHECKOUT_URL = PRICE.url;
 var STEP_WEBHOOK_URL = "https://n8n.manuai.com.br/webhook/funil-vgv-step";
 var answers = { preco: PRICE.label };
@@ -419,11 +436,25 @@ var VERBA_6M = {
 // Ancoragem honesta do preço: compara com a verba que a própria pessoa declarou.
 function precoAncora(){
   var v = answers.verba;
-  if(v === "zero")  return "Pagamento único — menos que um dia de anúncio quando você começar.";
-  if(v === "ate1k") return "Menos do que um único dia da sua verba atual.";
-  if(v === "1a5k")  return "Menos do que um único dia da sua verba atual.";
-  if(v === "5k+")   return "Menos de 15% de um único dia da sua verba.";
-  return "";
+  if(PRICE_KEY === "a"){ // R$ 9,90 — textos originais, sem mudança
+    if(v === "zero")  return "Pagamento único — menos que um dia de anúncio quando você começar.";
+    if(v === "ate1k") return "Menos do que um único dia da sua verba atual.";
+    if(v === "1a5k")  return "Menos do que um único dia da sua verba atual.";
+    if(v === "5k+")   return "Menos de 15% de um único dia da sua verba.";
+    return "";
+  }
+  // demais preços: conta feita pelo piso da faixa declarada, pra frase ser sempre verdadeira
+  var p = PRICE.n;
+  if(v === "zero") return "Pagamento único — antes de colocar o primeiro real em anúncio.";
+  if(v === "1a5k"){
+    var dias = p / (1000/30);
+    return dias <= 1 ? "Menos do que um único dia da sua verba atual." : "Menos do que "+Math.ceil(dias)+" dias da sua verba atual.";
+  }
+  if(v === "5k+"){
+    var pct = Math.ceil((p / (5000/30)) * 100 / 5) * 5;
+    return "Menos de "+pct+"% de um único dia da sua verba.";
+  }
+  return ""; // até R$ 1.000: faixa larga demais pra comparar com honestidade
 }
 
 function sanitize(s){ return String(s||"").replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]}) }
@@ -559,8 +590,11 @@ function render(){
           '<div class="tag"><span class="seal">Oferta de lançamento</span></div>'+
           '<div style="font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold-l);font-weight:800;margin-top:6px">Código VGV — Ebook completo</div>'+
           '<div class="price-old">De R$ 450</div>'+
-          '<div class="price-now"><span class="cur">R$</span>'+PRICE.label+'</div>'+
-          '<div class="price-sub">pagamento único · acesso imediato e vitalício</div>'+
+          (PRICE.parcela
+            ? '<div class="price-now"><span class="cur">'+PRICE.parcela.n+'x R$</span>'+PRICE.parcela.v+'</div>'+
+              '<div class="price-sub">ou R$ '+PRICE.label+' à vista · acesso imediato e vitalício</div>'
+            : '<div class="price-now"><span class="cur">R$</span>'+PRICE.label+'</div>'+
+              '<div class="price-sub">pagamento único · acesso imediato e vitalício</div>')+
           (ancora ? '<p style="font-size:13px;color:var(--gold-l);font-weight:600;margin:-12px 0 18px;line-height:1.4">'+ancora+'</p>' : '')+
           '<button class="btn btn-gold" id="btnCheckout">👉 Compre agora e aplique no mesmo dia →</button>'+
           '<div class="price-note">Pagamento seguro · Kiwify. Não há promessa de resultado: os resultados variam conforme produto, praça, execução e verba.</div>'+
