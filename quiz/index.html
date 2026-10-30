@@ -216,7 +216,7 @@ footer.disc{color:#6B6F7A;font-size:11px;text-align:center;padding:30px 0 10px;l
 <footer class="disc wrap">Não há promessa de resultado. Os resultados variam conforme produto, praça, verba e execução. Este produto não é afiliado ao Meta/Facebook.</footer>
 
 <script>
-// Teste de preço: cada visitante cai em uma variante (50/50) e mantém ela nas próximas visitas.
+// Preço fixo em R$ 9,90 (igual ao que está no vídeo do anúncio agora).
 // Link fixo de R$ 19,00: /quiz-19 (rewrite no vercel.json). Forçar pra conferir: ?p=a (R$ 9,90) ou ?p=b (R$ 19,00)
 var PRICES = {
   a: { label: "9,90",  url: "https://pay.kiwify.com.br/2a2yZPt" },
@@ -226,13 +226,7 @@ function priceVariant(){
   var forced = (location.search.match(/[?&]p=([ab])\b/) || [])[1];
   if(!forced && /^\/quiz-19\/?$/.test(location.pathname)) forced = "b";
   if(forced) return forced;
-  var k = "vgv_preco_var", v = null;
-  try{ v = localStorage.getItem(k); }catch(e){}
-  if(!PRICES[v]){
-    v = Math.random() < 0.5 ? "a" : "b";
-    try{ localStorage.setItem(k, v); }catch(e){}
-  }
-  return v;
+  return "a";
 }
 var PRICE = PRICES[priceVariant()];
 var CHECKOUT_URL = PRICE.url;
